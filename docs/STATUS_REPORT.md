@@ -1,36 +1,36 @@
-# Laporan Status & Dokumentasi Implementasi
+# Implementation Status Report & Technical Documentation
 ## AI Disaster Intelligence System (Academic Web Prototype)
 
-**Lokasi Proyek:** `/home/argf/reddit-project`  
-**Tanggal Laporan:** 22 September 2026  
-**Status Keseluruhan:** **100% Selesai & Berfungsi Penuh (Backend & Frontend)**  
+**Project Path:** `/home/argf/reddit-project`  
+**Report Date:** September 22, 2026  
+**Overall Status:** **100% Completed & Fully Functional (Backend & Frontend)**  
 
 ---
 
-## 1. Ringkasan Eksekutif (Executive Summary)
+## 1. Executive Summary
 
-Sistem **AI Disaster Intelligence System** telah berhasil ditransformasikan dari Google Colab Notebook menjadi aplikasi web terpadu yang terdiri dari **FastAPI Backend**, **SQLite Database**, dan **React (Vite) + Tailwind CSS + Leaflet Frontend**.
+The **AI Disaster Intelligence System** has been successfully transformed from an experimental Google Colab research notebook into an integrated, production-structured web application comprising a **FastAPI Backend**, an **SQLite Database**, and a modern **React (Vite) + Tailwind CSS + Leaflet Frontend**.
 
-Seluruh kapabilitas AI/ML dari notebook sumber acuan terbaru (`1wEYVictsQCvVXHNTSHwKCKcmdGMaDIES`) telah diintegrasikan secara dinamis:
-1. **Model Prediksi Risiko Cuaca:** Menggunakan **XGBoost Classifier** (`XGBClassifier`) yang dilatih pada baseline meteorologi (Cell 6 notebook) dengan akurasi validasi 97.33%, menghasilkan nilai probabilitas nyata (`risk_probability`) dan klasifikasi keparahan (`LOW`, `MEDIUM`, `HIGH`).
-2. **Model Remote Sensing & Visi Komputer:** 
-   * **OpenAI CLIP (`ViT-B/32`):** Klasifikasi *zero-shot* jenis bencana pada citra udara/drone.
-   * **Ultralytics YOLO11 (`yolo11n.pt`):** Deteksi objek lapangan (orang, mobil, perahu, dll.) lengkap dengan anotasi *bounding box* gambar.
-   * **OpenCV Matrix Delta:** Analisis perubahan kerusakan sebelum/sesudah (*pre/post*) dan pembuatan peta panas warna semu (*JET colormap heatmap*).
-3. **Model NLP Triase Darurat:** Menggunakan **BART (`facebook/bart-large-mnli`)** untuk klasifikasi otomatis pesan/tweet darurat ke kategori prioritas keselamatan jiwa.
-4. **Logistik GIS & Shelter:** Perhitungan jarak *geodesic* ke shelter terdaftar dan visualisasi jalur evakuasi pada peta interaktif Leaflet.
-5. **SitRep Generator & Exporter:** Pembuatan otomatis dokumen resmi *Crisis Situation Report* (SitRep) dengan opsi unduh format Markdown (`.md`) dan JSON (`.json`).
+All machine learning and deep learning capabilities from the reference research notebook have been dynamically integrated:
+1. **Meteorological Risk Prediction Model:** Utilizes a trained **XGBoost Classifier** (`XGBClassifier`) evaluating live atmospheric parameters to output genuine risk probabilities (`risk_probability`), quantitative risk indices (`risk_score`), and statistical risk tiers (`LOW`, `MEDIUM`, `HIGH`).
+2. **Remote Sensing & Computer Vision Models:**
+   * **OpenAI CLIP (`ViT-B/32`):** Zero-shot hazard classification across 6 disaster taxonomies using natural-language prompt ensembles.
+   * **Ultralytics YOLO11 (`yolo11n.pt`):** Field entity detection (persons, vehicles, vessels) with annotated bounding-box visualization.
+   * **OpenCV Matrix Delta:** Absolute difference matrix analysis for pre/post disaster imagery with false-color JET colormap heatmap generation.
+3. **Emergency NLP Triage Model:** Utilizes **BART (`facebook/bart-large-mnli`)** for automated zero-shot classification and urgency categorization of citizen emergency dispatches.
+4. **Geospatial Logistics & Shelter Matching:** Geodesic distance calculation to registered municipal shelters and interactive route polyline rendering on Leaflet.
+5. **SitRep Generator & Exporter:** Automated synthesis of formal Crisis Situation Reports with one-click export to Markdown (`.md`) and JSON (`.json`).
 
 ---
 
-## 2. Arsitektur Sistem & Tech Stack
+## 2. System Architecture & Tech Stack
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
 │                        FRONTEND (React + Vite)                         │
 │  - React 19 + Tailwind CSS + Leaflet.js + Lucide Icons                │
-│  - Axios Client dengan JWT Bearer Token Interceptor                    │
-│  - 9 Tampilan: Dashboard, Image Analysis, Damage Assessment,           │
+│  - Axios Client with JWT Bearer Token Request Interceptor              │
+│  - 9 Views: Dashboard, Image Analysis, Damage Assessment,              │
 │    Emergency Feed, Shelter Map, History, Reports, Admin, Login/Reg     │
 └───────────────────────────────────┬────────────────────────────────────┘
                                     │ HTTP / REST API (Port 8000)
@@ -58,188 +58,189 @@ Seluruh kapabilitas AI/ML dari notebook sumber acuan terbaru (`1wEYVictsQCvVXHNT
 ┌───────────────────────────────────▼────────────────────────────────────┐
 │                         DATA & STORAGE LAYER                           │
 │  - SQLite Database (`disaster_intel.db`)                               │
-│  - Model Cache (`xgboost_risk_model.json`, `yolo11n.pt`)               │
+│  - Model Weights Cache (`xgboost_risk_model.json`, `yolo11n.pt`)       │
 │  - Static Asset Mount (`/uploads/heatmaps/`, `/uploads/annotated/`)    │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 3. Detail Implementasi Backend (`reddit-project/backend`)
+## 3. Backend Implementation Details (`reddit-project/backend`)
 
-### A. Struktur Direktori
+### A. Directory Structure
 ```
 backend/
 ├── app/
-│   ├── config.py             # Konfigurasi JWT, uploads path, database URL, FAST_DEV_MODE
-│   ├── database.py           # Engine SQLite & SessionLocal dependency
-│   ├── main.py               # Aplikasi FastAPI, CORS, auto-seed data, router mount
+│   ├── config.py             # JWT config, upload paths, database URL, FAST_DEV_MODE
+│   ├── database.py           # SQLite engine & SessionLocal dependency
+│   ├── main.py               # FastAPI app, CORS, auto-seed data, router mounting
 │   ├── models/               # SQLAlchemy Models:
 │   │   ├── user.py           # User (id, email, hashed_password, role, created_at)
-│   │   ├── shelter.py        # Shelter (id, name, region, lat, lon, capacity, occupancy)
+│   │   ├── shelter.py        # Shelter (id, name, region, lat, lon, address, capacity)
 │   │   ├── social.py         # SocialDispatch (id, post_text, classification, urgency)
-│   │   ├── assessment.py     # Assessment (riwayat audit asesmen lengkap)
-│   │   └── report.py         # Report (SitRep tergenerasi)
-│   ├── schemas/              # Pydantic Schemas untuk validasi input/output API
+│   │   ├── assessment.py     # Assessment (comprehensive audit record across 4 modalities)
+│   │   └── report.py         # Report (generated SitRep metadata)
+│   ├── schemas/              # Pydantic Schemas for API input/output validation
 │   ├── services/             # Core Logic Services:
-│   │   ├── auth_service.py   # JWT token creation & bcrypt verification
+│   │   ├── auth_service.py   # JWT token creation & bcrypt password verification
 │   │   ├── weather_service.py# Open-Meteo REST API client
-│   │   ├── risk_service.py   # Model XGBoost (predict_proba & LOW/MED/HIGH)
+│   │   ├── risk_service.py   # XGBoost risk model (predict_proba & LOW/MED/HIGH)
 │   │   ├── vision_service.py # CLIP Zero-Shot + YOLO11 Object Detection + OpenCV
-│   │   ├── nlp_service.py    # BART Zero-Shot Emergency Triage
-│   │   ├── gis_service.py    # Geodesic distance & shelter recommendation
-│   │   └── report_service.py # Crisis Situation Report generation
+│   │   ├── nlp_service.py    # BART Zero-Shot Emergency Dispatch Triage
+│   │   ├── gis_service.py    # Geodesic distance calculation & shelter routing
+│   │   ├── email_service.py  # Emergency HTML broadcast generator & SMTP dispatch
+│   │   └── report_service.py # Crisis Situation Report generation & formatting
 │   └── routers/              # 9 Endpoint Routers:
 │       ├── auth.py, weather.py, risk.py, vision.py, social.py, gis.py,
 │       ├── assessments.py, reports.py, admin.py
 ├── data/
-│   ├── seed_shelters.json    # Seed prototype shelters
+│   ├── seed_shelters.json    # Seed prototype municipal shelters
 │   ├── seed_dispatches.json  # Seed simulated emergency social media dispatches
-│   ├── xgboost_risk_model.json # Model bobot XGBoost yang telah dilatih
-│   └── samples/              # Benchmark test images (sample_flood, before, after)
-├── uploads/                  # Penyimpanan dinamis gambar teranotasi & heatmap
-├── run.py                    # Runner server Uvicorn
-├── requirements.txt          # Dependensi Python
-└── disaster_intel.db         # Database SQLite lokal
+│   ├── xgboost_risk_model.json # Trained XGBoost classifier weights
+│   └── samples/              # Benchmark test imagery (flood, before, after)
+├── uploads/                  # Runtime storage for raw and annotated images
+├── run.py                    # Uvicorn entry point runner
+├── requirements.txt          # Python dependencies
+└── disaster_intel.db         # Local SQLite database
 ```
 
-### B. Endpoint API yang Tersedia
+### B. Available API Endpoints
 
-| Router | Method | Endpoint | Deskripsi |
+| Router | Method | Endpoint | Description |
 | :--- | :---: | :--- | :--- |
-| **Auth** | `POST` | `/api/v1/auth/register` | Mendaftarkan akun operator/admin baru |
-| **Auth** | `POST` | `/api/v1/auth/login` | Login & menerima JWT Bearer token |
-| **Auth** | `GET` | `/api/v1/auth/me` | Memeriksa data user yang aktif |
-| **Weather** | `GET` | `/api/v1/weather/presets` | Mendapatkan preset kota rawan bencana |
-| **Weather** | `GET` | `/api/v1/weather/live` | Live telemetry cuaca dari Open-Meteo |
-| **Risk** | `POST` | `/api/v1/risk/evaluate` | Evaluasi risiko cuaca dengan XGBoost dinamis |
-| **Vision** | `POST` | `/api/v1/vision/classify` | Analisis citra tunggal (CLIP + YOLO11) |
-| **Vision** | `POST` | `/api/v1/vision/damage-assessment`| Analisis perbandingan sebelum/sesudah (OpenCV) |
-| **Social** | `GET` | `/api/v1/social/feed` | Mengambil feed pesan darurat terklasifikasi BART |
-| **Social** | `POST` | `/api/v1/social/classify-custom` | Triase teks darurat instan |
-| **Social** | `POST` | `/api/v1/social/create` | Menyuntikkan laporan darurat baru ke feed |
-| **GIS** | `GET` | `/api/v1/gis/shelters` | Daftar shelter terdaftar |
-| **GIS** | `GET` | `/api/v1/gis/nearest` | Rekomendasi shelter terdekat & rute evakuasi |
-| **Assessments** | `POST` | `/api/v1/assessments/save` | Menyimpan status asesmen ke riwayat audit |
-| **Assessments** | `GET` | `/api/v1/assessments/history`| Mengambil daftar riwayat asesmen masa lalu |
-| **Assessments** | `DELETE`| `/api/v1/assessments/{id}` | Menghapus catatan asesmen tertentu |
-| **Reports** | `POST` | `/api/v1/reports/generate` | Membuat dokumen Situation Report (SitRep) |
-| **Reports** | `GET` | `/api/v1/reports/{id}/export` | Mengunduh SitRep format Markdown atau JSON |
-| **Admin** | `GET` | `/api/v1/admin/stats` | Statistik keseluruhan sistem untuk admin |
-| **Admin** | `POST` | `/api/v1/admin/shelters` | Menambahkan shelter darurat baru |
-| **Admin** | `DELETE`| `/api/v1/admin/shelters/{id}` | Menghapus shelter tertentu |
-| **Admin** | `POST` | `/api/v1/admin/seed-data` | Memulihkan seed data prototype |
+| **Auth** | `POST` | `/api/v1/auth/register` | Register a new operator or admin account |
+| **Auth** | `POST` | `/api/v1/auth/login` | Authenticate credentials and receive JWT Bearer token |
+| **Auth** | `GET` | `/api/v1/auth/me` | Retrieve profile of the currently authenticated user |
+| **Weather** | `GET` | `/api/v1/weather/presets` | Retrieve high-risk geographic coordinate presets |
+| **Weather** | `GET` | `/api/v1/weather/live` | Ingest real-time meteorological telemetry from Open-Meteo |
+| **Risk** | `POST` | `/api/v1/risk/evaluate` | Evaluate meteorological risk via dynamic XGBoost model |
+| **Vision** | `POST` | `/api/v1/vision/analyze` | Single-image analysis (CLIP hazard + YOLO11 objects) |
+| **Vision** | `POST` | `/api/v1/vision/damage-assessment`| Optical before/after change detection (OpenCV) |
+| **Social** | `GET` | `/api/v1/social/feed` | Retrieve citizen dispatch feed triaged with BART |
+| **Social** | `POST` | `/api/v1/social/classify-custom` | Real-time zero-shot triage of custom emergency text |
+| **Social** | `POST` | `/api/v1/social/triage` | Re-triage all unprocessed citizen messages |
+| **GIS** | `GET` | `/api/v1/gis/shelters` | Retrieve list of registered municipal shelters |
+| **GIS** | `GET` | `/api/v1/gis/nearest` | Calculate nearest shelter and evacuation polyline |
+| **Assessments** | `POST` | `/api/v1/assessments/save` | Persist multimodal assessment to audit log & trigger alerts |
+| **Assessments** | `GET` | `/api/v1/assessments/history`| Retrieve chronological audit history of assessments |
+| **Assessments** | `DELETE`| `/api/v1/assessments/{id}` | Delete a specific assessment record |
+| **Reports** | `POST` | `/api/v1/reports/generate` | Compile formal Situation Report (SitRep) |
+| **Reports** | `GET` | `/api/v1/reports/download/{id}` | Download SitRep in Markdown or JSON format |
+| **Admin** | `GET` | `/api/v1/admin/stats` | System telemetry counts and metrics for administrators |
+| **Admin** | `POST` | `/api/v1/admin/shelters` | Register a new emergency shelter |
+| **Admin** | `DELETE`| `/api/v1/admin/shelters/{id}` | Remove a shelter from the registry |
+| **Admin** | `POST` | `/api/v1/admin/reseed` | Reset and reseed prototype shelters and dispatches |
 
 ---
 
-## 4. Detail Implementasi Frontend (`reddit-project/frontend`)
+## 4. Frontend Implementation Details (`reddit-project/frontend`)
 
-### A. Struktur Direktori
+### A. Directory Structure
 ```
 frontend/
 ├── src/
 │   ├── api/
-│   │   └── client.js              # Axios instance dengan Authorization header
+│   │   └── client.js              # Axios instance configured with Authorization header
 │   ├── context/
-│   │   └── AuthContext.jsx        # Penyedia state user & token JWT global
+│   │   └── AuthContext.jsx        # Global authentication state and JWT manager
 │   ├── components/
-│   │   ├── Navbar.jsx             # Navigasi tab responsif, user info & logout
-│   │   ├── ThreatBadge.jsx        # Badge visual level ancaman (Low s/d Critical)
-│   │   └── LeafletMap.jsx         # Peta Leaflet interaktif (episentrum & shelter)
+│   │   ├── Navbar.jsx             # Responsive tab navigation, user info, and logout
+│   │   ├── ThreatBadge.jsx        # Visual severity status badge (LOW through CRITICAL)
+│   │   └── LeafletMap.jsx         # Interactive Leaflet map (epicenters, shelters, routes)
 │   ├── views/
-│   │   ├── LoginView.jsx          # Form login dengan tombol demo quick-fill
-│   │   ├── RegisterView.jsx       # Form registrasi operator
-│   │   ├── DashboardView.jsx      # Dashboard operasional utama
-│   │   ├── ImageAnalysisView.jsx  # Multi-Model Vision (CLIP + YOLO11)
-│   │   ├── DamageAssessmentView.jsx # OpenCV Sebelum/Sesudah + Heatmap
-│   │   ├── EmergencyMessagesView.jsx # Triase pesan darurat NLP (BART)
-│   │   ├── ShelterMapView.jsx     # Peta GIS shelter & logistik evakuasi
-│   │   ├── HistoryView.jsx        # Audit log riwayat asesmen tersimpan
-│   │   ├── ReportsView.jsx        # Viewer SitRep & pengunduh (.md / .json)
-│   │   └── AdminView.jsx          # Panel admin & manajemen shelter
-│   ├── App.jsx                    # Root layout & tab router
-│   ├── index.css                  # Tailwind CSS & Leaflet styles
+│   │   ├── LoginView.jsx          # Login view with demo quick-fill buttons
+│   │   ├── RegisterView.jsx       # Operator registration view
+│   │   ├── DashboardView.jsx      # Central multi-modal operations dashboard
+│   │   ├── ImageAnalysisView.jsx  # Multi-Model Vision console (CLIP + YOLO11)
+│   │   ├── DamageAssessmentView.jsx # OpenCV Before/After optical differencing view
+│   │   ├── EmergencyMessagesView.jsx # BART citizen emergency dispatch triage view
+│   │   ├── ShelterMapView.jsx     # GIS shelter logistics and full-screen map
+│   │   ├── HistoryView.jsx        # Assessment audit history log
+│   │   ├── ReportsView.jsx        # SitRep report viewer and exporter (.md / .json)
+│   │   └── AdminView.jsx          # Administrator telemetry and shelter CRUD
+│   ├── App.jsx                    # Root application layout and unified context router
+│   ├── index.css                  # Tailwind CSS and Leaflet styles
 │   └── main.jsx
 ├── tailwind.config.js
 ├── vite.config.js
 └── package.json
 ```
 
-### B. Fitur Unggulan Tampilan UI
-1. **Dashboard:**
-   * Pemilihan preset kota atau penyesuaian koordinat manual.
-   * 4 Kartu metrik live: Curah Hujan (mm), Kecepatan Angin (km/h), Suhu/Kelembapan, dan **XGBoost Risk Probability (%)**.
-   * Banner peringatan darurat otomatis menyala berkedip (*pulsing alert*) saat severity berada pada level `HIGH` atau `CRITICAL`, menampilkan shelter terdekat dan status broadcast email peringatan.
-   * Peta pratinjau Leaflet dengan garis rute putus-putus ke shelter terdekat.
-   * Tombol *"Save Assessment"* untuk menyimpan audit ke SQLite secara instan.
+### B. User Interface Highlights
+1. **Command Dashboard:**
+   * High-risk preset selector (Hyderabad, Jakarta, Mumbai, Miami, Manila) or custom coordinates.
+   * Four live telemetry cards: Precipitation (mm), Wind Velocity (km/h), Temp/Humidity, and **XGBoost Risk Probability (%)**.
+   * Pulsing alert banner dynamically activated when incident severity reaches `HIGH` or `CRITICAL`, displaying the nearest shelter, exact address, and email alert broadcast status.
+   * Leaflet preview map rendering a dashed evacuation polyline to the nearest refuge.
+   * *"Save Assessment"* button instantly persisting the multi-modal audit state to SQLite.
 2. **Multi-Model Vision Analysis:**
-   * Unggah citra tunggal untuk memicu analisis paralel dua model: **CLIP** untuk mengklasifikasi kategori bencana dan **YOLO11** untuk mendeteksi objek lapangan.
-   * Toggle pratinjau antara citra asli (*Raw Photo*) dan citra hasil anotasi bounding box YOLO11 (*Annotated Boxes*).
-   * Daftar objek terdeteksi dengan badge persentase keyakinan.
+   * Single-image upload triggering parallel evaluation: **CLIP** for disaster taxonomy classification and **YOLO11** for entity detection.
+   * Toggle between raw photography and YOLO11 annotated bounding-box overlays.
+   * Detected object table with confidence percentage badges.
 3. **Damage Assessment View:**
-   * Unggah citra *Before* dan *After*.
-   * Tampilan 3-way berdampingan: *Before*, *After*, dan *Difference Heatmap* hasil perhitungan matriks OpenCV beserta persentase selisih piksel permukaan.
+   * Side-by-side Before and After image comparison.
+   * Three-way display: *Before*, *After*, and *Difference Heatmap* computed via OpenCV absolute pixel differencing with surface delta percentage.
 4. **Emergency Messages View:**
-   * Kotak input teks untuk menguji triase teks darurat secara *real-time* dengan BART.
-   * Feed sosial darurat simulasi yang dapat difilter berdasarkan urgensi (*CRITICAL, HIGH, MEDIUM, LOW*).
+   * Real-time text box to test arbitrary citizen dispatches against BART.
+   * Filterable dispatch feed categorized by urgency (`CRITICAL`, `HIGH`, `MEDIUM`, `LOW`).
 5. **SitRep Reports View:**
-   * Menghasilkan teks resmi Situation Report berdasarkan data cuaca, analisis visual, data sosial, dan rekomendasi shelter.
-   * Tombol sekali klik untuk langsung mengunduh file `.md` atau `.json`.
+   * Automated compilation of executive disaster briefings fusing weather, vision, damage, citizen dispatches, and shelter recommendations.
+   * One-click download buttons for `.md` and `.json` formats.
 
 ---
 
-## 5. Matriks Transparansi Data: Real vs Prototype
+## 5. Data Transparency Matrix: Real vs. Prototype
 
-Sesuai dengan etika akademik dan batasan teknis proyek 48 jam:
+In accordance with academic research integrity standards:
 
-| Komponen | Status Implementasi | Catatan Transparansi Akademik |
+| Component | Implementation Status | Academic Transparency Notes |
 | :--- | :---: | :--- |
-| **Live Weather Ingestion** | **100% Real** | Mengambil telemetri langsung dari Open-Meteo REST API berdasarkan koordinat lintang/bujur. |
-| **Model Risiko Bencana** | **100% Real AI** | Model `XGBClassifier` nyata yang dilatih dan diinferensikan secara langsung dari input cuaca. |
-| **Klasifikasi Bencana Citra** | **100% Real AI** | Model foundation vision `openai/clip-vit-base-patch32` (*zero-shot*). |
-| **Deteksi Objek Citra** | **100% Real AI** | Model `yolo11n.pt` dari Ultralytics untuk mendeteksi objek relevan (orang, kendaraan, perahu). |
-| **Analisis Perubahan Kerusakan** | **100% Real CV** | Operasi matriks `cv2.absdiff` dan `cv2.COLORMAP_JET` nyata via OpenCV. |
-| **Triase Pesan Darurat** | **100% Real AI** | Model NLP NLI `facebook/bart-large-mnli` (*zero-shot classification*). |
-| **Pemetaan & Jarak Shelter** | **100% Real GIS** | Perhitungan jarak `geodesic` nyata dan rendering Leaflet interaktif. |
-| **Data Citra Satelit** | *Prototype/Benchmark* | Menggunakan citra benchmark yang diunggah pengguna (bukan streaming konstelasi Sentinel/Planet langsung). |
-| **Feed Media Sosial** | *Prototype/Simulated* | Menggunakan dataset skenario dispatch darurat (bukan scraping live firehose Twitter API berbayar). |
-| **Registri Shelter** | *Prototype Registry* | Data shelter demonstrasi (bukan live database internal BPBD/pemerintah). |
+| **Live Weather Ingestion** | **100% Real** | Fetches live atmospheric telemetry from Open-Meteo REST API based on coordinates. |
+| **Meteorological Risk Model** | **100% Real AI** | Real `XGBClassifier` trained and inferred dynamically from weather parameters. |
+| **Visual Disaster Classification**| **100% Real AI** | OpenAI `clip-vit-base-patch32` foundation model operating in zero-shot mode. |
+| **Visual Entity Detection** | **100% Real AI** | Ultralytics `yolo11n.pt` detecting physical entities (people, vehicles, boats). |
+| **Damage Change Detection** | **100% Real CV** | Real OpenCV matrix operations (`cv2.absdiff` and `cv2.COLORMAP_JET`). |
+| **Citizen Dispatch Triage** | **100% Real AI** | Real `facebook/bart-large-mnli` sequence classification pipeline. |
+| **GIS & Geodesic Distance** | **100% Real GIS** | True `geopy` WGS-84 ellipsoidal distance calculations and interactive Leaflet maps. |
+| **Satellite Imagery Feeds** | *Prototype Benchmark*| Uses benchmark and user-uploaded imagery rather than live satellite constellation downlinks. |
+| **Social Media Stream** | *Prototype Simulated*| Utilizes pre-seeded emergency dispatch scenarios rather than live firehose scraping. |
+| **Municipal Shelters** | *Prototype Registry* | Modeled mock facilities for demonstration rather than real-time municipal civil defense feeds. |
 
 ---
 
-## 6. Panduan Menjalankan Aplikasi
+## 6. How to Run the Application
 
-### Menjalankan Backend:
+### Running the Backend:
 ```bash
 cd /home/argf/reddit-project/backend
 source venv/bin/activate
 
-# Mode Cepat (Direkomendasikan untuk demo instan):
+# Fast Development Mode (Recommended for quick demos without heavy weights):
 FAST_DEV_MODE=1 python run.py
 
-# Atau Mode Normal (Load full deep learning weights):
+# Normal Mode (Loads full deep learning weights: CLIP, YOLO11, BART):
 python run.py
 ```
-* **URL Backend:** `http://localhost:8000`
-* **Swagger API Docs:** `http://localhost:8000/docs`
+* **Backend API Base:** `http://localhost:8000`
+* **Interactive Swagger UI:** `http://localhost:8000/docs`
 
-### Menjalankan Frontend (di terminal terpisah):
+### Running the Frontend (in a separate terminal):
 ```bash
 cd /home/argf/reddit-project/frontend
 npm run dev
 ```
-* **URL Frontend:** `http://localhost:5173`
+* **Frontend Web Console:** `http://localhost:5173`
 
 ---
 
-## 7. Kredensial Demo Evaluator
+## 7. Evaluator Demo Credentials
 
-Pada halaman login (`http://localhost:5173`), tersedia tombol **Quick-Fill**:
+On the login page (`http://localhost:5173`), convenient **Quick-Fill** buttons are provided:
 * **Chief Incident Commander (Admin):**
   * Email: `admin@disaster.intel`
   * Password: `admin123`
-  * Hak Akses: Dashboard, Analisis Citra, Triase Pesan, History, Laporan SitRep, dan Manajemen Shelter Admin.
+  * Permissions: Full access (Dashboard, Vision, NLP, History, Reports, Admin Shelter Management).
 * **Field Operations Officer (Operator):**
   * Email: `operator@disaster.intel`
   * Password: `operator123`
-  * Hak Akses: Operasional harian dan pembuatan laporan situasi.
+  * Permissions: Standard operations (Dashboard, Vision, NLP, History, SitRep compilation).
