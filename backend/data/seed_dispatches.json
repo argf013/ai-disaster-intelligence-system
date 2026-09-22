@@ -1,0 +1,56 @@
+[
+  {
+    "post_text": "People are trapped near the flooded bridge and need immediate rescue.",
+    "author_handle": "@hyd_citizen1",
+    "classification": "people trapped",
+    "confidence": 0.942,
+    "urgency_level": "CRITICAL",
+    "latitude": 17.3880,
+    "longitude": 78.4890
+  },
+  {
+    "post_text": "Several injured people need medical assistance near the market.",
+    "author_handle": "@market_watch",
+    "classification": "medical emergency",
+    "confidence": 0.915,
+    "urgency_level": "CRITICAL",
+    "latitude": 17.3820,
+    "longitude": 78.4810
+  },
+  {
+    "post_text": "The road to the hospital is blocked by debris.",
+    "author_handle": "@driver_hyd",
+    "classification": "road blockage",
+    "confidence": 0.887,
+    "urgency_level": "HIGH",
+    "latitude": 17.3910,
+    "longitude": 78.4790
+  },
+  {
+    "post_text": "Heavy rain is expected tonight, please stay indoors.",
+    "author_handle": "@weather_alert",
+    "classification": "weather warning",
+    "confidence": 0.961,
+    "urgency_level": "MEDIUM",
+    "latitude": 17.4000,
+    "longitude": 78.4700
+  },
+  {
+    "post_text": "Water levels rising rapidly in low-lying residential sectors. Power lines are submerged.",
+    "author_handle": "@secunderabad_now",
+    "classification": "flood report",
+    "confidence": 0.933,
+    "urgency_level": "HIGH",
+    "latitude": 17.4410,
+    "longitude": 78.5020
+  },
+  {
+    "post_text": "Community kitchen set up with drinking water and basic rations at town hall.",
+    "author_handle": "@relief_volunteer",
+    "classification": "other information",
+    "confidence": 0.874,
+    "urgency_level": "LOW",
+    "latitude": 17.4200,
+    "longitude": 78.4900
+  }
+]
