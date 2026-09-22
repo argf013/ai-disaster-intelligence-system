@@ -4,6 +4,8 @@
 > This system is an academic proof-of-concept for multimodal disaster intelligence and crisis response decision support. It integrates meteorological telemetry, zero-shot computer vision, optical change detection, emergency message triage, and geospatial shelter matching into a unified command console.  
 > **It is NOT certified, production-hardened emergency response infrastructure and must not be used as the sole basis for real-world life-safety decisions.**
 
+**Repository:** [https://github.com/argf013/ai-disaster-intelligence-system](https://github.com/argf013/ai-disaster-intelligence-system)
+
 ---
 
 ## 1. Project Overview
@@ -83,7 +85,7 @@ The **AI-Based Disaster Intelligence System** is an end-to-end web prototype tha
 ## 4. Project Structure
 
 ```
-reddit-project/
+ai-disaster-intelligence-system/
 ├── README.md                      # Comprehensive project documentation
 ├── backend/
 │   ├── disaster_intel.db          # Active SQLite database file
@@ -169,8 +171,8 @@ Before installing, ensure the following software is installed on your operating 
 
 1. **Clone the repository and enter the backend directory:**
    ```bash
-   git clone <repository-url>
-   cd reddit-project/backend
+   git clone https://github.com/argf013/ai-disaster-intelligence-system.git
+   cd ai-disaster-intelligence-system/backend
    ```
 
 2. **Create and activate a Python virtual environment:**
@@ -207,7 +209,7 @@ Before installing, ensure the following software is installed on your operating 
 
 1. **Open a new terminal and navigate to the frontend directory:**
    ```bash
-   cd reddit-project/frontend
+   cd ai-disaster-intelligence-system/frontend
    ```
 
 2. **Install Node.js dependencies:**

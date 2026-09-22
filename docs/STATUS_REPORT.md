@@ -1,7 +1,7 @@
 # Implementation Status Report & Technical Documentation
 ## AI Disaster Intelligence System (Academic Web Prototype)
 
-**Project Path:** `/home/argf/reddit-project`  
+**Repository:** [https://github.com/argf013/ai-disaster-intelligence-system](https://github.com/argf013/ai-disaster-intelligence-system)  
 **Report Date:** September 22, 2026  
 **Overall Status:** **100% Completed & Fully Functional (Backend & Frontend)**  
 
@@ -65,7 +65,7 @@ All machine learning and deep learning capabilities from the reference research 
 
 ---
 
-## 3. Backend Implementation Details (`reddit-project/backend`)
+## 3. Backend Implementation Details (`ai-disaster-intelligence-system/backend`)
 
 ### A. Directory Structure
 ```
@@ -133,7 +133,7 @@ backend/
 
 ---
 
-## 4. Frontend Implementation Details (`reddit-project/frontend`)
+## 4. Frontend Implementation Details (`ai-disaster-intelligence-system/frontend`)
 
 ### A. Directory Structure
 ```
@@ -212,7 +212,7 @@ In accordance with academic research integrity standards:
 
 ### Running the Backend:
 ```bash
-cd /home/argf/reddit-project/backend
+cd backend
 source venv/bin/activate
 
 # Fast Development Mode (Recommended for quick demos without heavy weights):
@@ -226,7 +226,7 @@ python run.py
 
 ### Running the Frontend (in a separate terminal):
 ```bash
-cd /home/argf/reddit-project/frontend
+cd frontend
 npm run dev
 ```
 * **Frontend Web Console:** `http://localhost:5173`
