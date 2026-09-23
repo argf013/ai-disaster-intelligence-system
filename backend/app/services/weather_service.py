@@ -9,16 +9,46 @@ LOCATION_PRESETS = [
         "description": "Telangana low-lying urban catchment area with Musi river flood history"
     },
     {
+        "name": "Mumbai (Monsoon Coastal Zone)",
+        "latitude": 19.0760,
+        "longitude": 72.8777,
+        "description": "Arabian sea coastal metropolis vulnerable to monsoon tidal surges"
+    },
+    {
+        "name": "Chennai (Coromandel Flash Flood Zone)",
+        "latitude": 13.0827,
+        "longitude": 80.2707,
+        "description": "Northeast monsoon flash flood vulnerable coastal basin"
+    },
+    {
+        "name": "Kolkata (Bay of Bengal Cyclone Corridor)",
+        "latitude": 22.5726,
+        "longitude": 88.3639,
+        "description": "Ganges delta urban area prone to severe cyclonic storms"
+    },
+    {
         "name": "Jakarta (Coastal Submersion Zone)",
         "latitude": -6.2088,
         "longitude": 106.8456,
         "description": "Ciliwung river basin prone to high precipitation urban flooding"
     },
     {
-        "name": "Mumbai (Monsoon Coastal Zone)",
-        "latitude": 19.0760,
-        "longitude": 72.8777,
-        "description": "Arabian sea coastal metropolis vulnerable to monsoon tidal surges"
+        "name": "Manila (Typhoon Alley)",
+        "latitude": 14.5995,
+        "longitude": 120.9842,
+        "description": "Western Pacific typhoon impact zone prone to flash floods"
+    },
+    {
+        "name": "Bangkok (Chao Phraya River Basin)",
+        "latitude": 13.7563,
+        "longitude": 100.5018,
+        "description": "Low-elevation delta plain vulnerable to monsoon river swells"
+    },
+    {
+        "name": "Tokyo (Pacific Seismic & Typhoon Zone)",
+        "latitude": 35.6762,
+        "longitude": 139.6503,
+        "description": "High-density coastal metropolis with typhoon storm surge exposure"
     },
     {
         "name": "Miami (Hurricane Storm Surge Zone)",
@@ -27,10 +57,22 @@ LOCATION_PRESETS = [
         "description": "Atlantic tropical cyclone corridor with severe storm surge exposure"
     },
     {
-        "name": "Manila (Typhoon Alley)",
-        "latitude": 14.5995,
-        "longitude": 120.9842,
-        "description": "Western Pacific typhoon impact zone prone to flash floods"
+        "name": "New York (Atlantic Coastal Surge Zone)",
+        "latitude": 40.7128,
+        "longitude": -74.0060,
+        "description": "Hudson estuary coastal surge vulnerability zone"
+    },
+    {
+        "name": "London (Thames Tidal Flood Defense Zone)",
+        "latitude": 51.5074,
+        "longitude": -0.1278,
+        "description": "Thames estuary tidal surge barrier operations sector"
+    },
+    {
+        "name": "Sydney (Coastal Storm & Wildfire Buffer)",
+        "latitude": -33.8688,
+        "longitude": 151.2093,
+        "description": "Pacific coastal basin vulnerable to acute east coast lows"
     }
 ]
 

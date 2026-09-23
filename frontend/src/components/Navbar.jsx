@@ -44,7 +44,7 @@ export const Navbar = ({ activeTab, setActiveTab }) => {
                 DISASTER<span className="text-red-500">INTEL</span>
               </span>
               <span className="hidden sm:inline-block ml-2 text-xs font-semibold px-2 py-0.5 bg-slate-800 text-slate-400 border border-slate-700 rounded">
-                Academic Prototype
+                Operations Console v1.0
               </span>
             </div>
           </div>

@@ -15,13 +15,16 @@ export const LeafletMap = ({
   const mapInstanceRef = useRef(null);
   const layerGroupRef = useRef(null);
 
+  const centerLat = center && center[0] != null ? center[0] : 17.3850;
+  const centerLon = center && center[1] != null ? center[1] : 78.4867;
+
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
     // Initialize map if not already done
     if (!mapInstanceRef.current) {
       const map = L.map(mapContainerRef.current, {
-        center: center,
+        center: [centerLat, centerLon],
         zoom: zoom,
         scrollWheelZoom: true,
       });
@@ -34,9 +37,9 @@ export const LeafletMap = ({
       layerGroupRef.current = L.layerGroup().addTo(map);
       mapInstanceRef.current = map;
     } else {
-      mapInstanceRef.current.setView(center, zoom);
+      mapInstanceRef.current.setView([centerLat, centerLon], zoom);
     }
-  }, [center, zoom]);
+  }, [centerLat, centerLon, zoom]);
 
   useEffect(() => {
     if (!mapInstanceRef.current || !layerGroupRef.current) return;

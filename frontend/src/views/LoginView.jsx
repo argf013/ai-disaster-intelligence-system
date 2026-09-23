@@ -38,7 +38,7 @@ export const LoginView = ({ onSwitchToRegister }) => {
             AI Disaster Intelligence
           </h2>
           <p className="text-xs text-slate-400 mt-1">
-            Academic Operations Console & Multi-Modal Decision Support
+            Disaster Operations Console &amp; Multi-Modal Decision Support
           </p>
         </div>
 
@@ -97,7 +97,7 @@ export const LoginView = ({ onSwitchToRegister }) => {
         {/* Demo Fast Login Pills */}
         <div className="mt-6 pt-6 border-t border-slate-800">
           <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-wider text-center mb-2.5">
-            Academic Demo Quick-Fill
+            Quick-Login (Demo Profiles)
           </p>
           <div className="grid grid-cols-2 gap-2">
             <button

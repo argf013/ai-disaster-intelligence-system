@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import apiClient from '../api/client';
-import { Layers, UploadCloud, ArrowRight, AlertTriangle, AlertCircle } from 'lucide-react';
+import { Layers, UploadCloud, ArrowRight, AlertTriangle, AlertCircle, Shield, Navigation, Users } from 'lucide-react';
 
-export const DamageAssessmentView = ({ onUseInAssessment }) => {
+export const DamageAssessmentView = ({ onUseInAssessment, currentLocation, onNavigateToShelters }) => {
   const [beforeFile, setBeforeFile] = useState(null);
   const [afterFile, setAfterFile] = useState(null);
   const [beforePreview, setBeforePreview] = useState(null);
@@ -11,6 +11,16 @@ export const DamageAssessmentView = ({ onUseInAssessment }) => {
   const [result, setResult] = useState(null);
   const [transferred, setTransferred] = useState(false);
   const [error, setError] = useState('');
+  const [nearestShelter, setNearestShelter] = useState(null);
+
+  useEffect(() => {
+    const lat = currentLocation?.latitude || 17.3850;
+    const lon = currentLocation?.longitude || 78.4867;
+    apiClient
+      .get(`/gis/nearest?lat=${lat}&lon=${lon}`)
+      .then((res) => setNearestShelter(res.data))
+      .catch((err) => console.error('Failed to load nearest shelter in DamageAssessment', err));
+  }, [currentLocation]);
 
   const handleBeforeChange = (e) => {
     const file = e.target.files[0];
@@ -192,6 +202,40 @@ export const DamageAssessmentView = ({ onUseInAssessment }) => {
               />
             </div>
           </div>
+
+          {/* Automated Nearest Refuge Recommendation */}
+          {nearestShelter && (
+            <div className="p-4 bg-emerald-950/40 border border-emerald-500/40 rounded-xl space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-bold text-emerald-400 flex items-center gap-1.5">
+                  <Shield className="w-3.5 h-3.5 text-emerald-400" />
+                  Designated Refuge ({currentLocation?.name || 'Active Sector'})
+                </span>
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-900 text-emerald-200 border border-emerald-500/40">
+                  {nearestShelter.distance_km} km away
+                </span>
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h5 className="font-bold text-sm text-white">{nearestShelter.shelter.name}</h5>
+                  <p className="text-[11px] text-slate-300">
+                    {nearestShelter.shelter.address ? `${nearestShelter.shelter.address} • ` : ''}
+                    Capacity: <b className="text-emerald-400">{nearestShelter.available_capacity}</b> / {nearestShelter.shelter.capacity} beds available
+                  </p>
+                </div>
+                {onNavigateToShelters && (
+                  <button
+                    type="button"
+                    onClick={onNavigateToShelters}
+                    className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-xs font-semibold flex items-center gap-1.5 transition shadow shrink-0"
+                  >
+                    <Navigation className="w-3.5 h-3.5" />
+                    View Evacuation Map
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Action: Transfer to Disaster Assessment */}
           {onUseInAssessment && (

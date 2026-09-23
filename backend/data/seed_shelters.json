@@ -88,5 +88,75 @@
     "capacity": 1200,
     "current_occupancy": 250,
     "contact_phone": "+63-2-8525-4567"
+  },
+  {
+    "name": "Jawaharlal Nehru Stadium Relief Hub",
+    "region": "Chennai",
+    "address": "Sydenhams Rd, Periyamet, Chennai, Tamil Nadu 600003",
+    "latitude": 13.0837,
+    "longitude": 80.2742,
+    "capacity": 1400,
+    "current_occupancy": 180,
+    "contact_phone": "+91-44-2561-9988"
+  },
+  {
+    "name": "Salt Lake Stadium Civil Defense Hub",
+    "region": "Kolkata",
+    "address": "JB Block, Sector III, Bidhannagar, Kolkata, West Bengal 700098",
+    "latitude": 22.5697,
+    "longitude": 88.4069,
+    "capacity": 1800,
+    "current_occupancy": 310,
+    "contact_phone": "+91-33-2335-4422"
+  },
+  {
+    "name": "Bangkok Youth Center (Thai-Japan) Evacuation Refuge",
+    "region": "Bangkok",
+    "address": "Mit Maitri Rd, Din Daeng, Bangkok 10400, Thailand",
+    "latitude": 13.7663,
+    "longitude": 100.5532,
+    "capacity": 1100,
+    "current_occupancy": 150,
+    "contact_phone": "+66-2-245-4743"
+  },
+  {
+    "name": "Tokyo Big Sight Disaster Relief Complex",
+    "region": "Tokyo",
+    "address": "3-11-1 Ariake, Koto City, Tokyo 135-0063, Japan",
+    "latitude": 35.6298,
+    "longitude": 139.7944,
+    "capacity": 3000,
+    "current_occupancy": 420,
+    "contact_phone": "+81-3-5530-1111"
+  },
+  {
+    "name": "Manhattan Municipal Evacuation Center",
+    "region": "New York",
+    "address": "654 W 34th St, New York, NY 10001, USA",
+    "latitude": 40.7559,
+    "longitude": -74.0022,
+    "capacity": 2500,
+    "current_occupancy": 350,
+    "contact_phone": "+1-212-639-9675"
+  },
+  {
+    "name": "Excel London Emergency Relief Hub",
+    "region": "London",
+    "address": "Royal Victoria Dock, 1 Western Gateway, London E16 1XL, UK",
+    "latitude": 51.5085,
+    "longitude": 0.0299,
+    "capacity": 2200,
+    "current_occupancy": 290,
+    "contact_phone": "+44-20-7069-5000"
+  },
+  {
+    "name": "Sydney Olympic Park Sports Evacuation Center",
+    "region": "Sydney",
+    "address": "Olympic Blvd, Sydney Olympic Park NSW 2127, Australia",
+    "latitude": -33.8477,
+    "longitude": 151.0634,
+    "capacity": 1600,
+    "current_occupancy": 210,
+    "contact_phone": "+61-2-9714-7888"
   }
 ]

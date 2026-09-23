@@ -18,6 +18,13 @@ const MainApp = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [reportAssessmentId, setReportAssessmentId] = useState(null);
 
+  // Shared active operational location across all modules
+  const [currentLocation, setCurrentLocation] = useState({
+    name: 'Hyderabad (Flood Zone)',
+    latitude: 17.3850,
+    longitude: 78.4867,
+  });
+
   // Shared Integrated Assessment Context: aggregates image analysis, before/after, and emergency text into dashboard/assessment
   const [assessmentContext, setAssessmentContext] = useState({
     vision: null, // { disaster_type, image_confidence, image_severity, yolo_objects, annotated_image_url }
@@ -94,18 +101,33 @@ const MainApp = () => {
             onNavigateToShelters={handleNavigateToShelters}
             assessmentContext={assessmentContext}
             onClearContextItem={handleClearContextItem}
+            currentLocation={currentLocation}
+            setCurrentLocation={setCurrentLocation}
           />
         )}
         {activeTab === 'image-analysis' && (
-          <ImageAnalysisView onUseInAssessment={handleUseVisionInAssessment} />
+          <ImageAnalysisView
+            onUseInAssessment={handleUseVisionInAssessment}
+            currentLocation={currentLocation}
+            onNavigateToShelters={handleNavigateToShelters}
+          />
         )}
         {activeTab === 'damage-assessment' && (
-          <DamageAssessmentView onUseInAssessment={handleUseDamageInAssessment} />
+          <DamageAssessmentView
+            onUseInAssessment={handleUseDamageInAssessment}
+            currentLocation={currentLocation}
+            onNavigateToShelters={handleNavigateToShelters}
+          />
         )}
         {activeTab === 'emergency-messages' && (
           <EmergencyMessagesView onUseInAssessment={handleUseEmergencyInAssessment} />
         )}
-        {activeTab === 'shelter-map' && <ShelterMapView />}
+        {activeTab === 'shelter-map' && (
+          <ShelterMapView
+            currentLocation={currentLocation}
+            setCurrentLocation={setCurrentLocation}
+          />
+        )}
         {activeTab === 'history' && (
           <HistoryView onSelectAssessmentForReport={handleNavigateToReports} />
         )}
@@ -117,8 +139,8 @@ const MainApp = () => {
 
       <footer className="border-t border-slate-900 bg-slate-950 py-4 text-center text-xs text-slate-500">
         <p>
-          AI Disaster Intelligence Academic Prototype &bull; Integrates Live Open-Meteo Telemetry,
-          HuggingFace Zero-Shot Models (CLIP &amp; BART), and Prototype Municipal GIS Infrastructure.
+          AI Disaster Intelligence System &bull; Integrates Live Open-Meteo Telemetry,
+          HuggingFace Vision &amp; Language Models, and Municipal GIS Infrastructure.
         </p>
       </footer>
     </div>

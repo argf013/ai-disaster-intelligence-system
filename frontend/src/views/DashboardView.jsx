@@ -28,12 +28,18 @@ export const DashboardView = ({
   onNavigateToShelters,
   assessmentContext = {},
   onClearContextItem,
+  currentLocation,
+  setCurrentLocation,
 }) => {
   const [presets, setPresets] = useState([]);
-  const [selectedPreset, setSelectedPreset] = useState('');
-  const [locationName, setLocationName] = useState('Hyderabad (Flood Zone)');
-  const [latitude, setLatitude] = useState(17.3850);
-  const [longitude, setLongitude] = useState(78.4867);
+  const [selectedPreset, setSelectedPreset] = useState(
+    currentLocation?.name || 'Hyderabad (Flood Zone)'
+  );
+  const [locationName, setLocationName] = useState(
+    currentLocation?.name || 'Hyderabad (Flood Zone)'
+  );
+  const [latitude, setLatitude] = useState(currentLocation?.latitude || 17.3850);
+  const [longitude, setLongitude] = useState(currentLocation?.longitude || 78.4867);
 
   // Telemetry & Computed State
   const [weather, setWeather] = useState(null);
@@ -51,7 +57,9 @@ export const DashboardView = ({
       try {
         const res = await apiClient.get('/weather/presets');
         setPresets(res.data);
-        if (res.data.length > 0) {
+        if (currentLocation?.name) {
+          setSelectedPreset(currentLocation.name);
+        } else if (res.data.length > 0) {
           setSelectedPreset(res.data[0].name);
         }
       } catch (err) {
@@ -61,6 +69,17 @@ export const DashboardView = ({
     fetchPresets();
     fetchRecentAssessments();
   }, []);
+
+  // Sync if currentLocation changes from outside
+  useEffect(() => {
+    if (currentLocation && currentLocation.name) {
+      setSelectedPreset(currentLocation.name);
+      setLocationName(currentLocation.name);
+      setLatitude(currentLocation.latitude);
+      setLongitude(currentLocation.longitude);
+      runAssessment(currentLocation.latitude, currentLocation.longitude, currentLocation.name);
+    }
+  }, [currentLocation]);
 
   // Fetch recent assessments
   const fetchRecentAssessments = async () => {
@@ -100,7 +119,9 @@ export const DashboardView = ({
   };
 
   useEffect(() => {
-    runAssessment(latitude, longitude, locationName);
+    if (!currentLocation) {
+      runAssessment(latitude, longitude, locationName);
+    }
   }, []);
 
   const handlePresetChange = (e) => {
@@ -111,13 +132,11 @@ export const DashboardView = ({
       setLocationName(found.name);
       setLatitude(found.latitude);
       setLongitude(found.longitude);
+      if (setCurrentLocation) {
+        setCurrentLocation(found);
+      }
       runAssessment(found.latitude, found.longitude, found.name);
     }
-  };
-
-  const handleManualCoordSubmit = (e) => {
-    e.preventDefault();
-    runAssessment(parseFloat(latitude), parseFloat(longitude), locationName);
   };
 
   // Minimal deterministic overall severity rule combining independent model signals:
@@ -239,7 +258,7 @@ export const DashboardView = ({
           <div className="flex flex-wrap items-center gap-3">
             <div>
               <label className="block text-[10px] font-bold uppercase text-slate-400 mb-1">
-                Select High-Risk Preset
+                Select Operational Sector
               </label>
               <select
                 value={selectedPreset}

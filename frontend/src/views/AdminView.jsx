@@ -71,7 +71,7 @@ export const AdminView = () => {
   };
 
   const handleSeedData = async () => {
-    if (!window.confirm('Re-seed prototype database with default shelters and dispatches?')) return;
+    if (!window.confirm('Re-seed database with baseline shelters and dispatches?')) return;
     try {
       const res = await apiClient.post('/admin/seed-data');
       setActionMsg(res.data.message);
@@ -90,7 +90,7 @@ export const AdminView = () => {
             Administrative Infrastructure Portal
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            System health, municipal shelter registry management, and prototype data seeding
+            System health, municipal shelter registry management, and baseline data seeding
           </p>
         </div>
 
@@ -99,7 +99,7 @@ export const AdminView = () => {
           className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition"
         >
           <RotateCcw className="w-3.5 h-3.5" />
-          Re-seed Prototype Data
+          Re-seed Baseline Data
         </button>
       </div>
 
@@ -228,7 +228,7 @@ export const AdminView = () => {
 
         {/* Existing Shelters Table */}
         <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-3">
-          <h3 className="font-bold text-sm text-white">Registered Prototype Shelters</h3>
+          <h3 className="font-bold text-sm text-white">Registered Municipal Shelters</h3>
           <div className="overflow-x-auto max-h-96">
             <table className="w-full text-left text-xs text-slate-300">
               <thead className="bg-slate-800 text-slate-400 uppercase font-semibold">
