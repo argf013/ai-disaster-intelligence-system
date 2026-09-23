@@ -40,26 +40,6 @@
     "contact_phone": "+91-40-2311-7788"
   },
   {
-    "name": "GOR Otista Evacuation Shelter",
-    "region": "Jakarta",
-    "address": "Jl. Otto Iskandardinata No.121, Jatinegara, Jakarta Timur 13330",
-    "latitude": -6.2345,
-    "longitude": 106.8680,
-    "capacity": 700,
-    "current_occupancy": 210,
-    "contact_phone": "+62-21-819-0011"
-  },
-  {
-    "name": "Masjid Istiqlal Emergency Center",
-    "region": "Jakarta",
-    "address": "Jl. Taman Wijaya Kusuma, Ps. Baru, Sawah Besar, Jakarta Pusat 10710",
-    "latitude": -6.1702,
-    "longitude": 106.8317,
-    "capacity": 1500,
-    "current_occupancy": 320,
-    "contact_phone": "+62-21-381-1708"
-  },
-  {
     "name": "Dharavi Municipal Relief School",
     "region": "Mumbai",
     "address": "90 Feet Rd, Kala Killa, Dharavi, Mumbai, Maharashtra 400017",
@@ -70,24 +50,24 @@
     "contact_phone": "+91-22-2407-1234"
   },
   {
-    "name": "Miami Beach Convention Evacuation Center",
-    "region": "Miami",
-    "address": "1901 Convention Center Dr, Miami Beach, FL 33139, USA",
-    "latitude": 25.7946,
-    "longitude": -80.1340,
-    "capacity": 2000,
-    "current_occupancy": 400,
-    "contact_phone": "+1-305-673-7311"
+    "name": "Bandra Kurla Complex Relief Shelter",
+    "region": "Mumbai",
+    "address": "G Block, BKC Urban Complex, Bandra East, Mumbai 400051",
+    "latitude": 19.0657,
+    "longitude": 72.8682,
+    "capacity": 1200,
+    "current_occupancy": 140,
+    "contact_phone": "+91-22-2659-0000"
   },
   {
-    "name": "Rizal Memorial Coliseum Emergency Shelter",
-    "region": "Manila",
-    "address": "Pablo Ocampo St, Malate, Manila, 1004 Metro Manila, Philippines",
-    "latitude": 14.5630,
-    "longitude": 120.9930,
-    "capacity": 1200,
-    "current_occupancy": 250,
-    "contact_phone": "+63-2-8525-4567"
+    "name": "Andheri Sports Complex Evacuation Center",
+    "region": "Mumbai",
+    "address": "Veera Desai Rd, Andheri West, Mumbai, Maharashtra 400053",
+    "latitude": 19.1305,
+    "longitude": 72.8300,
+    "capacity": 850,
+    "current_occupancy": 110,
+    "contact_phone": "+91-22-2674-3322"
   },
   {
     "name": "Jawaharlal Nehru Stadium Relief Hub",
@@ -100,63 +80,213 @@
     "contact_phone": "+91-44-2561-9988"
   },
   {
+    "name": "Marina Beach Multi-Disaster Shelter",
+    "region": "Chennai",
+    "address": "Kamarajar Salai, Triplicane, Chennai, Tamil Nadu 600005",
+    "latitude": 13.0500,
+    "longitude": 80.2824,
+    "capacity": 900,
+    "current_occupancy": 95,
+    "contact_phone": "+91-44-2844-5511"
+  },
+  {
+    "name": "Guindy Industrial Civil Defense Hub",
+    "region": "Chennai",
+    "address": "SIDCO Industrial Estate, Guindy, Chennai, Tamil Nadu 600032",
+    "latitude": 13.0067,
+    "longitude": 80.2030,
+    "capacity": 1100,
+    "current_occupancy": 130,
+    "contact_phone": "+91-44-2250-7766"
+  },
+  {
     "name": "Salt Lake Stadium Civil Defense Hub",
     "region": "Kolkata",
     "address": "JB Block, Sector III, Bidhannagar, Kolkata, West Bengal 700098",
     "latitude": 22.5697,
-    "longitude": 88.4069,
-    "capacity": 1800,
-    "current_occupancy": 310,
-    "contact_phone": "+91-33-2335-4422"
-  },
-  {
-    "name": "Bangkok Youth Center (Thai-Japan) Evacuation Refuge",
-    "region": "Bangkok",
-    "address": "Mit Maitri Rd, Din Daeng, Bangkok 10400, Thailand",
-    "latitude": 13.7663,
-    "longitude": 100.5532,
-    "capacity": 1100,
-    "current_occupancy": 150,
-    "contact_phone": "+66-2-245-4743"
-  },
-  {
-    "name": "Tokyo Big Sight Disaster Relief Complex",
-    "region": "Tokyo",
-    "address": "3-11-1 Ariake, Koto City, Tokyo 135-0063, Japan",
-    "latitude": 35.6298,
-    "longitude": 139.7944,
-    "capacity": 3000,
-    "current_occupancy": 420,
-    "contact_phone": "+81-3-5530-1111"
-  },
-  {
-    "name": "Manhattan Municipal Evacuation Center",
-    "region": "New York",
-    "address": "654 W 34th St, New York, NY 10001, USA",
-    "latitude": 40.7559,
-    "longitude": -74.0022,
+    "longitude": 88.4072,
     "capacity": 2500,
-    "current_occupancy": 350,
-    "contact_phone": "+1-212-639-9675"
+    "current_occupancy": 210,
+    "contact_phone": "+91-33-2335-5000"
   },
   {
-    "name": "Excel London Emergency Relief Hub",
-    "region": "London",
-    "address": "Royal Victoria Dock, 1 Western Gateway, London E16 1XL, UK",
-    "latitude": 51.5085,
-    "longitude": 0.0299,
+    "name": "Netaji Indoor Stadium Emergency Refuge",
+    "region": "Kolkata",
+    "address": "Eden Gardens, B.B.D. Bagh, Kolkata, West Bengal 700021",
+    "latitude": 22.5645,
+    "longitude": 88.3435,
+    "capacity": 1300,
+    "current_occupancy": 160,
+    "contact_phone": "+91-33-2248-1234"
+  },
+  {
+    "name": "Indira Gandhi Indoor Stadium Relief Hub",
+    "region": "Delhi",
+    "address": "Indraprastha Estate, Near Raj Ghat, New Delhi, Delhi 110002",
+    "latitude": 28.6292,
+    "longitude": 77.2472,
     "capacity": 2200,
-    "current_occupancy": 290,
-    "contact_phone": "+44-20-7069-5000"
+    "current_occupancy": 240,
+    "contact_phone": "+91-11-2339-2000"
   },
   {
-    "name": "Sydney Olympic Park Sports Evacuation Center",
-    "region": "Sydney",
-    "address": "Olympic Blvd, Sydney Olympic Park NSW 2127, Australia",
-    "latitude": -33.8477,
-    "longitude": 151.0634,
+    "name": "Kashmere Gate Civil Defense Shelter",
+    "region": "Delhi",
+    "address": "Inter State Bus Terminal Area, Kashmere Gate, Old Delhi 110006",
+    "latitude": 28.6675,
+    "longitude": 77.2285,
+    "capacity": 1000,
+    "current_occupancy": 150,
+    "contact_phone": "+91-11-2386-5544"
+  },
+  {
+    "name": "Yamuna Sports Complex Evacuation Center",
+    "region": "Delhi",
+    "address": "Master Somnath Marg, Surajmal Vihar, East Delhi 110092",
+    "latitude": 28.6533,
+    "longitude": 77.3082,
+    "capacity": 1500,
+    "current_occupancy": 180,
+    "contact_phone": "+91-11-2216-7788"
+  },
+  {
+    "name": "Kanteerava Indoor Stadium Emergency Hub",
+    "region": "Bengaluru",
+    "address": "Kasturba Rd, Sampangi Rama Nagar, Bengaluru, Karnataka 560001",
+    "latitude": 12.9698,
+    "longitude": 77.5926,
     "capacity": 1600,
     "current_occupancy": 210,
-    "contact_phone": "+61-2-9714-7888"
+    "contact_phone": "+91-80-2227-1122"
+  },
+  {
+    "name": "Koramangala Indoor Relief Camp",
+    "region": "Bengaluru",
+    "address": "80 Feet Rd, 4th Block, Koramangala, Bengaluru, Karnataka 560034",
+    "latitude": 12.9352,
+    "longitude": 77.6245,
+    "capacity": 950,
+    "current_occupancy": 120,
+    "contact_phone": "+91-80-2553-4455"
+  },
+  {
+    "name": "Jawaharlal Nehru International Stadium Relief Camp",
+    "region": "Kochi",
+    "address": "Stadium Link Rd, Kaloor, Kochi, Kerala 682017",
+    "latitude": 9.9984,
+    "longitude": 76.3000,
+    "capacity": 1800,
+    "current_occupancy": 220,
+    "contact_phone": "+91-484-240-5566"
+  },
+  {
+    "name": "Ernakulam Town Hall Emergency Shelter",
+    "region": "Kochi",
+    "address": "Banerji Rd, Kacheripady, Ernakulam, Kerala 682018",
+    "latitude": 9.9880,
+    "longitude": 76.2820,
+    "capacity": 750,
+    "current_occupancy": 85,
+    "contact_phone": "+91-484-239-1122"
+  },
+  {
+    "name": "Kalinga Stadium Multi-Disaster Refuge",
+    "region": "Bhubaneswar",
+    "address": "Biju Patnaik Colony, Nayapalli, Bhubaneswar, Odisha 751012",
+    "latitude": 20.3015,
+    "longitude": 85.8228,
+    "capacity": 2000,
+    "current_occupancy": 190,
+    "contact_phone": "+91-674-242-0055"
+  },
+  {
+    "name": "Baramunda Rapid Evacuation Hub",
+    "region": "Bhubaneswar",
+    "address": "Near ISBT Baramunda, Bhubaneswar, Odisha 751003",
+    "latitude": 20.2790,
+    "longitude": 85.7950,
+    "capacity": 1100,
+    "current_occupancy": 115,
+    "contact_phone": "+91-674-256-4433"
+  },
+  {
+    "name": "Sardar Vallabhbhai Patel Stadium Relief Center",
+    "region": "Ahmedabad",
+    "address": "Navrangpura, Ahmedabad, Gujarat 380009",
+    "latitude": 23.0425,
+    "longitude": 72.5667,
+    "capacity": 1400,
+    "current_occupancy": 130,
+    "contact_phone": "+91-79-2644-8899"
+  },
+  {
+    "name": "Sabarmati Riverfront Disaster Shelter",
+    "region": "Ahmedabad",
+    "address": "Riverfront West, Usmanpura, Ahmedabad, Gujarat 380013",
+    "latitude": 23.0300,
+    "longitude": 72.5760,
+    "capacity": 1000,
+    "current_occupancy": 90,
+    "contact_phone": "+91-79-2755-6677"
+  },
+  {
+    "name": "Gandhi Maidan Civil Defense Shelter",
+    "region": "Patna",
+    "address": "Near Kargil Chowk, Gandhi Maidan, Patna, Bihar 800001",
+    "latitude": 25.6178,
+    "longitude": 85.1432,
+    "capacity": 1500,
+    "current_occupancy": 175,
+    "contact_phone": "+91-612-222-3344"
+  },
+  {
+    "name": "Patliputra Sports Complex Relief Hub",
+    "region": "Patna",
+    "address": "Kankarbagh Main Rd, Lohia Nagar, Patna, Bihar 800020",
+    "latitude": 25.6022,
+    "longitude": 85.1764,
+    "capacity": 1200,
+    "current_occupancy": 140,
+    "contact_phone": "+91-612-235-8899"
+  },
+  {
+    "name": "Sarusajai Indira Gandhi Athletic Stadium",
+    "region": "Guwahati",
+    "address": "National Highway 37, Lokhra, Guwahati, Assam 781040",
+    "latitude": 26.1130,
+    "longitude": 91.7580,
+    "capacity": 1800,
+    "current_occupancy": 210,
+    "contact_phone": "+91-361-229-4455"
+  },
+  {
+    "name": "Nehru Stadium Municipal Flood Shelter",
+    "region": "Guwahati",
+    "address": "Bholanath Mandir Rd, Ulubari, Guwahati, Assam 781007",
+    "latitude": 26.1830,
+    "longitude": 91.7550,
+    "capacity": 1100,
+    "current_occupancy": 120,
+    "contact_phone": "+91-361-254-1122"
+  },
+  {
+    "name": "Balewadi Shiv Chhatrapati Sports Complex",
+    "region": "Pune",
+    "address": "Mahalunge, Balewadi, Pune, Maharashtra 411045",
+    "latitude": 18.5750,
+    "longitude": 73.7667,
+    "capacity": 2000,
+    "current_occupancy": 180,
+    "contact_phone": "+91-20-2737-2200"
+  },
+  {
+    "name": "Deccan Gymkhana Emergency Center",
+    "region": "Pune",
+    "address": "Prabhat Rd, Deccan Gymkhana, Pune, Maharashtra 411004",
+    "latitude": 18.5170,
+    "longitude": 73.8410,
+    "capacity": 850,
+    "current_occupancy": 95,
+    "contact_phone": "+91-20-2567-3344"
   }
 ]

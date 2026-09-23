@@ -12,67 +12,67 @@ LOCATION_PRESETS = [
         "name": "Mumbai (Monsoon Coastal Zone)",
         "latitude": 19.0760,
         "longitude": 72.8777,
-        "description": "Arabian sea coastal metropolis vulnerable to monsoon tidal surges"
+        "description": "Arabian Sea coastal metropolis vulnerable to monsoon tidal surges and Mithi river overflow"
     },
     {
         "name": "Chennai (Coromandel Flash Flood Zone)",
         "latitude": 13.0827,
         "longitude": 80.2707,
-        "description": "Northeast monsoon flash flood vulnerable coastal basin"
+        "description": "Northeast monsoon flash flood vulnerable coastal basin and Adyar river delta"
     },
     {
         "name": "Kolkata (Bay of Bengal Cyclone Corridor)",
         "latitude": 22.5726,
         "longitude": 88.3639,
-        "description": "Ganges delta urban area prone to severe cyclonic storms"
+        "description": "Ganges delta urban area prone to severe cyclonic storms and Hooghly tidal surges"
     },
     {
-        "name": "Jakarta (Coastal Submersion Zone)",
-        "latitude": -6.2088,
-        "longitude": 106.8456,
-        "description": "Ciliwung river basin prone to high precipitation urban flooding"
+        "name": "Delhi NCR (Yamuna River Floodplain)",
+        "latitude": 28.6139,
+        "longitude": 77.2090,
+        "description": "National capital basin prone to seasonal Yamuna river embankment overflow"
     },
     {
-        "name": "Manila (Typhoon Alley)",
-        "latitude": 14.5995,
-        "longitude": 120.9842,
-        "description": "Western Pacific typhoon impact zone prone to flash floods"
+        "name": "Bengaluru (Urban Flash Flood Zone)",
+        "latitude": 12.9716,
+        "longitude": 77.5946,
+        "description": "Plateau valley topography with lake interconnectivity breaches and flash floods"
     },
     {
-        "name": "Bangkok (Chao Phraya River Basin)",
-        "latitude": 13.7563,
-        "longitude": 100.5018,
-        "description": "Low-elevation delta plain vulnerable to monsoon river swells"
+        "name": "Kochi (Monsoon Coastal Inundation Basin)",
+        "latitude": 9.9312,
+        "longitude": 76.2673,
+        "description": "Vembanad estuary and Periyar river basin vulnerable to severe monsoon deluges"
     },
     {
-        "name": "Tokyo (Pacific Seismic & Typhoon Zone)",
-        "latitude": 35.6762,
-        "longitude": 139.6503,
-        "description": "High-density coastal metropolis with typhoon storm surge exposure"
+        "name": "Bhubaneswar (Odisha Cyclone Corridor)",
+        "latitude": 20.2961,
+        "longitude": 85.8245,
+        "description": "Coastal plains vulnerable to severe cyclonic storm landfalls and Mahanadi surges"
     },
     {
-        "name": "Miami (Hurricane Storm Surge Zone)",
-        "latitude": 25.7617,
-        "longitude": -80.1918,
-        "description": "Atlantic tropical cyclone corridor with severe storm surge exposure"
+        "name": "Ahmedabad (Sabarmati River Floodplain)",
+        "latitude": 23.0225,
+        "longitude": 72.5714,
+        "description": "Sabarmati river drainage basin with sudden cloudburst inundation vulnerability"
     },
     {
-        "name": "New York (Atlantic Coastal Surge Zone)",
-        "latitude": 40.7128,
-        "longitude": -74.0060,
-        "description": "Hudson estuary coastal surge vulnerability zone"
+        "name": "Patna (Ganga & Kosi Inundation Plain)",
+        "latitude": 25.5941,
+        "longitude": 85.1376,
+        "description": "Gangetic floodplains exposed to recurring seasonal river inundation"
     },
     {
-        "name": "London (Thames Tidal Flood Defense Zone)",
-        "latitude": 51.5074,
-        "longitude": -0.1278,
-        "description": "Thames estuary tidal surge barrier operations sector"
+        "name": "Guwahati (Brahmaputra Deluge & Landslide Belt)",
+        "latitude": 26.1445,
+        "longitude": 91.7362,
+        "description": "Brahmaputra river valley subject to intense flash floods and slope instabilities"
     },
     {
-        "name": "Sydney (Coastal Storm & Wildfire Buffer)",
-        "latitude": -33.8688,
-        "longitude": 151.2093,
-        "description": "Pacific coastal basin vulnerable to acute east coast lows"
+        "name": "Pune (Mutha Basin Flash Flood Corridor)",
+        "latitude": 18.5204,
+        "longitude": 73.8567,
+        "description": "Western Ghats leeward foothills prone to dam discharge and urban river surges"
     }
 ]
 
