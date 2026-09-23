@@ -83,12 +83,13 @@ def startup_seed_data():
             )
             db.add(op_user)
 
-        # 2. Seed Prototype Shelters
-        if db.query(Shelter).count() == 0:
-            shelters_path = DATA_DIR / "seed_shelters.json"
-            if shelters_path.exists():
-                with open(shelters_path, "r") as f:
-                    for s in json.load(f):
+        # 2. Seed Shelters (Automatically add any new/missing shelters to database)
+        shelters_path = DATA_DIR / "seed_shelters.json"
+        if shelters_path.exists():
+            with open(shelters_path, "r") as f:
+                for s in json.load(f):
+                    existing = db.query(Shelter).filter(Shelter.name == s["name"]).first()
+                    if not existing:
                         db.add(Shelter(**s))
 
         # 3. Seed Simulated Emergency Dispatches
