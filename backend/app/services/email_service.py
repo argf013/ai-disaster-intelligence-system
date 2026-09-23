@@ -2,6 +2,7 @@ import smtplib
 import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.utils import formataddr
 from typing import Dict, Any, Optional
 from app.config import (
     SMTP_HOST,
@@ -9,6 +10,7 @@ from app.config import (
     SMTP_USER,
     SMTP_PASSWORD,
     SMTP_FROM_EMAIL,
+    SMTP_FROM_NAME,
     DEFAULT_ALERT_RECIPIENT
 )
 
@@ -124,9 +126,11 @@ def send_emergency_disaster_email(
     </html>
     """
 
+    sender_address = SMTP_FROM_EMAIL or SMTP_USER
+
     message = MIMEMultipart("alternative")
     message["Subject"] = subject
-    message["From"] = SMTP_FROM_EMAIL
+    message["From"] = formataddr((SMTP_FROM_NAME, sender_address))
     message["To"] = target_email
     message.attach(MIMEText(html_body, "html"))
 
@@ -135,8 +139,8 @@ def send_emergency_disaster_email(
         with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=10) as server:
             server.starttls(context=context)
             server.login(SMTP_USER, SMTP_PASSWORD)
-            server.sendmail(SMTP_FROM_EMAIL, [target_email], message.as_string())
-        print(f"[EmailService] Emergency email alert successfully dispatched to {target_email}")
+            server.sendmail(sender_address, [target_email], message.as_string())
+        print(f"[EmailService] Emergency email alert successfully dispatched to {target_email} from '{SMTP_FROM_NAME}' <{sender_address}>")
         return {"sent": True, "recipient": target_email}
     except Exception as e:
         print(f"[EmailService] Failed to send email alert via SMTP: {e}")

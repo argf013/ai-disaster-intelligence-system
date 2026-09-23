@@ -16,6 +16,7 @@ SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
 SMTP_USER = os.getenv("SMTP_USER", "")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL", "") or SMTP_USER
+SMTP_FROM_NAME = os.getenv("SMTP_FROM_NAME", "AI Disaster Intelligence System")
 DEFAULT_ALERT_RECIPIENT = os.getenv("ALERT_RECIPIENT_EMAIL", "")
 
 DATABASE_URL = f"sqlite:///{BASE_DIR}/disaster_intel.db"
