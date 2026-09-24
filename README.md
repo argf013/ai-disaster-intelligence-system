@@ -1,4 +1,4 @@
-# AI-Based Disaster Intelligence System (Academic Web Prototype)
+# AI-Based Disaster Intelligence System 
 
 > **Academic & Research Prototype Notice**  
 > This system is an academic proof-of-concept for multimodal disaster intelligence and crisis response decision support. It integrates meteorological telemetry, zero-shot computer vision, optical change detection, emergency message triage, and geospatial shelter matching into a unified command console.  
