@@ -42,25 +42,24 @@ def save_assessment(
     db.commit()
     db.refresh(assessment)
 
-    # Trigger real SMTP email alert asynchronously if threat is HIGH or CRITICAL
-    if payload.risk_level in ["HIGH", "CRITICAL"]:
-        shelter = None
-        if payload.nearest_shelter_id:
-            shelter = db.query(Shelter).filter(Shelter.id == payload.nearest_shelter_id).first()
+    # Trigger real SMTP email alert asynchronously irrespective of severity level
+    shelter = None
+    if payload.nearest_shelter_id:
+        shelter = db.query(Shelter).filter(Shelter.id == payload.nearest_shelter_id).first()
 
-        background_tasks.add_task(
-            send_emergency_disaster_email,
-            severity=payload.risk_level,
-            location_name=payload.location_name,
-            risk_score=payload.risk_score,
-            shelter_name=shelter.name if shelter else "Primary Municipal Shelter",
-            shelter_address=shelter.address if shelter else None,
-            shelter_distance_km=payload.shelter_distance_km,
-            shelter_phone=shelter.contact_phone if shelter else None,
-            detected_disaster=payload.detected_disaster,
-            image_confidence=payload.image_confidence,
-            yolo_objects=payload.yolo_objects
-        )
+    background_tasks.add_task(
+        send_emergency_disaster_email,
+        severity=payload.risk_level or "ALERT",
+        location_name=payload.location_name,
+        risk_score=payload.risk_score,
+        shelter_name=shelter.name if shelter else "Primary Municipal Shelter",
+        shelter_address=shelter.address if shelter else None,
+        shelter_distance_km=payload.shelter_distance_km,
+        shelter_phone=shelter.contact_phone if shelter else None,
+        detected_disaster=payload.detected_disaster,
+        image_confidence=payload.image_confidence,
+        yolo_objects=payload.yolo_objects
+    )
 
     return assessment
 

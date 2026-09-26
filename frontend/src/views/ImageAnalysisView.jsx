@@ -12,6 +12,8 @@ import {
   Shield,
   Navigation,
   MapPin,
+  AlertTriangle,
+  BellRing,
 } from 'lucide-react';
 
 export const ImageAnalysisView = ({ onUseInAssessment, currentLocation, onNavigateToShelters }) => {
@@ -53,6 +55,11 @@ export const ImageAnalysisView = ({ onUseInAssessment, currentLocation, onNaviga
     try {
       const formData = new FormData();
       formData.append('file', selectedFile);
+      if (currentLocation) {
+        formData.append('location_name', currentLocation.name);
+        formData.append('latitude', currentLocation.latitude);
+        formData.append('longitude', currentLocation.longitude);
+      }
 
       const res = await apiClient.post('/vision/classify', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
@@ -165,6 +172,29 @@ export const ImageAnalysisView = ({ onUseInAssessment, currentLocation, onNaviga
             </div>
           ) : (
             <div className="space-y-5">
+              {/* Emergency Alert Notification Banner (Irrespective of Severity) */}
+              <div className="p-3.5 bg-red-950/80 border border-red-500/60 rounded-xl text-red-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 animate-pulse shadow-lg">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 bg-red-600 rounded-lg text-white shrink-0">
+                    <AlertTriangle className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h5 className="font-bold text-xs text-white uppercase tracking-wider">
+                      DISASTER ALERT BROADCAST TRIGGERED
+                    </h5>
+                    <p className="text-[11px] text-red-200 mt-0.5">
+                      Evacuate toward primary refuge: <b>{nearestShelter?.shelter?.name || 'Designated Shelter'}</b> ({nearestShelter?.distance_km} km away).
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5 self-start sm:self-center">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-red-900 border border-red-500/40 rounded-full text-[10px] font-semibold text-white whitespace-nowrap">
+                    <BellRing className="w-3 h-3 text-yellow-300" />
+                    Alert Dispatched
+                  </span>
+                </div>
+              </div>
+
               {/* 1. CLIP Primary Classification */}
               <div className="p-4 bg-slate-800/80 border border-slate-700 rounded-xl flex items-center justify-between">
                 <div>

@@ -231,7 +231,8 @@ export const DashboardView = ({
     }
   };
 
-  const isSevere = overallSeverity === 'HIGH' || overallSeverity === 'CRITICAL';
+  // Always show disaster alert banner irrespective of model severity
+  const showAlert = Boolean(shelterResult || risk || assessmentContext.vision);
 
   return (
     <div className="space-y-6">
@@ -293,8 +294,8 @@ export const DashboardView = ({
           </div>
         </div>
 
-        {/* HIGH / CRITICAL ALERT BANNER */}
-        {isSevere && (
+        {/* DISASTER ALERT BANNER (Active Irrespective of Severity) */}
+        {showAlert && (
           <div className="mt-4 p-4 bg-red-950/80 border border-red-500/60 rounded-xl text-red-200 flex flex-col md:flex-row md:items-center justify-between gap-3 animate-pulse">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-red-600 rounded-lg text-white">
@@ -302,10 +303,10 @@ export const DashboardView = ({
               </div>
               <div>
                 <h4 className="font-bold text-sm text-white">
-                  URGENT: {overallSeverity} DISASTER ALERT DECLARED
+                  URGENT: DISASTER ALERT DECLARED ({overallSeverity} LEVEL)
                 </h4>
                 <p className="text-xs text-red-200 mt-0.5">
-                  Evacuate immediately toward primary refuge: <b>{shelterResult?.shelter?.name}</b> (
+                  Evacuate immediately toward primary refuge: <b>{shelterResult?.shelter?.name || 'Primary Municipal Shelter'}</b> (
                   {shelterResult?.distance_km} km away{shelterResult?.shelter?.address ? ` • ${shelterResult.shelter.address}` : ''}).
                 </p>
               </div>
