@@ -2,49 +2,62 @@ import os
 import uuid
 import numpy as np
 import cv2
-from PIL import Image, ImageDraw
-from typing import Dict, Any, List
-from app.config import HEATMAP_UPLOAD_DIR, RAW_UPLOAD_DIR, ANNOTATED_UPLOAD_DIR, FAST_DEV_MODE
+from PIL import Image, ImageOps, ImageDraw
 
-# Multi-prompt templates per disaster category.
-# In aerial/drone disaster imagery, single-word labels like "flood" or "wildfire" suffer from semantic ambiguity in CLIP.
-# Using descriptive, natural-language prompts tailored to aerial perspectives and disaster features stabilizes zero-shot alignment.
+# Comprehensive, visually distinctive multi-prompt templates per disaster category.
+# Following OpenAI CLIP best practices (Radford et al., 2021):
+# 1. Concrete visual descriptors (rubble, muddy water, torn roofs, smoke plumes) outperform abstract labels.
+# 2. Aerial/drone/satellite framing aligns with remote sensing and incident perspectives.
+# 3. Negations like "without disaster" are avoided because contrastive text encoders misinterpret negated concepts.
+# 4. Cross-disaster contamination words (e.g. mentioning "flood" in cyclone prompts) are strictly eliminated.
 DISASTER_PROMPT_TEMPLATES: Dict[str, List[str]] = {
     "flood": [
-        "an aerial photograph of a flooded area with water covering roads and buildings",
-        "a drone view of severe flooding with submerged houses, streets, and muddy floodwaters",
-        "an aerial view of flood disaster with inundation and waterlogged neighborhoods",
-        "a satellite or aerial shot of high flood waters inundating residential infrastructure"
+        "an aerial photograph of severe flooding with deep brown muddy water submerging streets and residential houses",
+        "a drone view of high floodwaters inundating urban neighborhoods with submerged roads and buildings",
+        "an aerial shot of an overflowing river causing massive inundation with buildings standing in deep water",
+        "a satellite view of a flood disaster with waterlogged terrain and inundated urban infrastructure",
+        "a drone photograph of widespread floodwaters covering roads, parking lots, and countryside",
+        "an aerial perspective of severe flood disaster with brown inundated water covering the ground"
     ],
     "wildfire": [
-        "an aerial photograph of a wildfire with flames, smoke, and burning vegetation",
-        "a drone shot of forest wildfire blaze spreading smoke across the landscape",
-        "an aerial view of active bushfire burning with intense smoke and charred land",
-        "a high-angle photo of wildfire flames consuming trees and wildland area"
+        "an aerial photograph of an active forest wildfire with bright flames and heavy rising smoke plumes",
+        "a drone shot of blazing wildfire consuming trees and spreading dense smoke across the hills",
+        "an aerial view of intense bushfire with glowing fire lines burning through forest and vegetation",
+        "a high-angle satellite photo of charred blackened landscape and thick smoke from a forest wildfire",
+        "a drone photograph of wildfire flames burning wildland and woodland with massive smoke clouds",
+        "an aerial view of active wildfire disaster with burning timber, ash, and orange fire fronts"
     ],
     "earthquake damage": [
-        "an aerial photograph of buildings and infrastructure damaged by an earthquake",
-        "a drone view of collapsed structures, rubble, and cracked ground from an earthquake",
-        "an aerial view of destroyed buildings and seismic structural destruction",
-        "a high-angle shot of earthquake devastation with pulverized concrete and debris"
+        "an aerial photograph of severe earthquake damage with collapsed buildings, concrete rubble, and structural ruins",
+        "a drone view of shattered concrete buildings, fallen walls, and rubble piles after an earthquake",
+        "an aerial shot of destroyed infrastructure, cracked masonry, and collapsed multi-story structures from an earthquake",
+        "a high-angle view of earthquake devastation with pulverized concrete, heaps of bricks, and architectural debris",
+        "a drone photograph of catastrophic earthquake destruction with fractured building facades and rubble-filled streets",
+        "an aerial view of seismic devastation showing leveled buildings, structural wreckage, and collapsed roofs"
     ],
-    "cyclone hurricane storm": [
-        "an aerial photograph showing severe cyclone or hurricane storm damage",
-        "a drone view of destructive storm surge, ripped roofs, and fallen trees after a hurricane",
-        "an aerial shot of coastal typhoon devastation with destroyed rooftops and storm wreckage",
-        "a high-angle view of catastrophic cyclone impact with violent wind and flood damage"
+    "cyclone/hurricane/storm": [
+        "an aerial photograph of extreme cyclone and hurricane devastation with torn metal roofs and wind debris",
+        "a drone view of severe tropical cyclone damage with ripped-off rooftops and uprooted trees across streets",
+        "an aerial shot of hurricane wreckage showing severely damaged houses, stripped roofs, and scattered debris",
+        "a high-angle photo of coastal typhoon aftermath with wind-damaged structures and debris strewn everywhere",
+        "a drone photograph of violent tropical storm damage with destroyed building roofs and storm wreckage",
+        "an aerial view of severe gale and hurricane devastation with shattered structures and windblown debris"
     ],
     "landslide": [
-        "an aerial photograph of a landslide with soil, rocks, and debris covering the ground",
-        "a drone view of mudslide and earth collapse burying roads and hillside houses",
-        "an aerial shot of slope failure with massive soil displacement and debris flow",
-        "a high-angle photo of a hillside landslide destroying terrain and pathways"
+        "an aerial photograph of a hillside landslide with massive displaced mud, rocks, and soil covering the slope",
+        "a drone view of a catastrophic mudslide carving down a steep mountain slope and burying pathways below",
+        "an aerial shot of unstable slope failure where a rock and earth avalanche wiped out vegetation and roads",
+        "a high-angle photo of a hillside debris flow with tons of displaced brown soil and boulders across terrain",
+        "a drone photograph of steep terrain collapsed into loose mud, soil mounds, and sheared rock slopes",
+        "an aerial view of an active landslide with massive ground collapse cutting through mountainside terrain"
     ],
     "normal scene": [
-        "an aerial photograph of a normal area without any natural disaster",
-        "a drone shot of calm urban or rural landscape with normal daily conditions",
-        "an aerial view of roads, houses, and green trees in peaceful weather",
-        "a high-angle shot of regular undamaged cityscape or nature"
+        "an aerial photograph of a calm undamaged urban area with intact buildings, clean dry roads, and regular traffic",
+        "a drone view of a routine city or residential neighborhood in clear weather with undamaged architecture",
+        "an aerial shot of healthy green landscape, intact houses, peaceful streets, and thriving vegetation",
+        "a high-angle view of an ordinary peaceful community with structurally sound buildings and dry pathways",
+        "a drone photograph of standard undamaged cityscape with intact rooftops, dry roads, and green trees",
+        "an aerial view of a serene undamaged countryside or town under clear sky with normal daily conditions"
     ]
 }
 
@@ -54,6 +67,8 @@ CANDIDATE_LABELS = list(DISASTER_PROMPT_TEMPLATES.keys())
 _clip_model = None
 _clip_processor = None
 _yolo_model = None
+_cached_text_features = None
+_cached_classes = None
 
 def get_clip_components():
     """
@@ -76,6 +91,48 @@ def get_clip_components():
             print(f"[VisionService] Notice: CLIP model initialization deferred/fallback: {e}")
             return "FALLBACK", "FALLBACK"
     return _clip_model, _clip_processor
+
+def get_cached_text_features(clip_model, clip_processor, device):
+    """
+    Precomputes and caches L2-normalized prototype text embeddings for all disaster classes.
+    Following OpenAI CLIP best practices (Radford et al., 2021):
+    1. Each template is encoded through the text transformer.
+    2. Prompt vectors are L2-normalized in the 512-dim feature space.
+    3. Normalized prompt vectors for each category are averaged to create an ensemble prototype.
+    4. The ensemble prototype is re-normalized to unit length.
+    
+    Why caching is crucial on an 8GB RAM / 2-core CPU:
+    - Precomputing this 6x512 matrix once eliminates encoding 36 text prompts on every request,
+      reducing CPU load and latency drastically without loading larger models.
+    """
+    global _cached_text_features, _cached_classes
+    if _cached_text_features is not None and _cached_classes == CANDIDATE_LABELS:
+        return _cached_text_features.to(device), _cached_classes
+
+    import torch
+    class_prototypes = []
+    with torch.no_grad():
+        for class_name in CANDIDATE_LABELS:
+            templates = DISASTER_PROMPT_TEMPLATES[class_name]
+            text_inputs = clip_processor(
+                text=templates,
+                return_tensors="pt",
+                padding=True
+            ).to(device)
+            # Encode templates through CLIP text model
+            text_embeds = clip_model.get_text_features(**text_inputs)
+            # L2-normalize each prompt embedding
+            text_embeds = text_embeds / text_embeds.norm(dim=-1, keepdim=True)
+            # Average normalized vectors to form the ensemble prototype
+            proto = text_embeds.mean(dim=0)
+            # Re-normalize to unit length
+            proto = proto / proto.norm(dim=-1, keepdim=True)
+            class_prototypes.append(proto.unsqueeze(0))
+
+        _cached_text_features = torch.cat(class_prototypes, dim=0) # Shape: (6, 512)
+        _cached_classes = list(CANDIDATE_LABELS)
+
+    return _cached_text_features.to(device), _cached_classes
 
 
 def get_yolo_model():
@@ -158,62 +215,48 @@ def _generate_fallback_yolo(source_path: str, out_path: str) -> List[Dict[str, A
 
 def classify_disaster_image(image_path: str) -> Dict[str, Any]:
     """
-    Classifies disaster imagery using multi-prompt zero-shot OpenAI CLIP and runs YOLO11 object detection.
+    Classifies disaster imagery using multi-prompt zero-shot OpenAI CLIP with
+    normalized text prototype ensembling and runs supplementary YOLO11 object detection.
     
-    Why multiple descriptive prompts are used:
-    1. Single-word labels (e.g. 'flood', 'wildfire') lack visual context in CLIP's text-image manifold.
-    2. Aerial and drone disaster photographs contain specific perspectives (inundated streets, collapsed roofs, smoke plumes)
-       which align much better with natural-language descriptive prompts.
-    3. Multiple templates per category are averaged across prompt variations to smooth out prompt variance
-       and produce robust, well-calibrated class probabilities via softmax.
+    Zero-Shot Ensembling:
+    - Pre-cached L2-normalized class prototypes (averaged across aerial/drone prompt templates).
+    - Image embedding dot-producted with normalized prototypes and scaled by learned logit_scale.
+    - Softmax over similarities produces consistent, well-calibrated class probabilities.
+    - YOLO11 is strictly supplementary object detection and is never used to determine disaster class.
     """
-    image = Image.open(image_path).convert("RGB")
+    # 1. Load image and apply EXIF orientation normalization (critical for aerial/drone photos)
+    raw_img = Image.open(image_path)
+    image = ImageOps.exif_transpose(raw_img).convert("RGB")
     clip_model, clip_processor = get_clip_components()
 
     scores = []
-    # 1. Multi-Prompt CLIP Zero-Shot Classification
+    # 1. Multi-Prompt Normalized CLIP Zero-Shot Prototype Classification
     if clip_model != "FALLBACK" and clip_processor != "FALLBACK":
         try:
             import torch
-            # Flatten all prompt templates while keeping track of their class mapping
-            all_prompts = []
-            prompt_to_class = []
-            for disaster_class, templates in DISASTER_PROMPT_TEMPLATES.items():
-                for t in templates:
-                    all_prompts.append(t)
-                    prompt_to_class.append(disaster_class)
-
-            # Preprocess image and all text prompts
             device = next(clip_model.parameters()).device
-            inputs = clip_processor(
-                text=all_prompts,
-                images=image,
-                return_tensors="pt",
-                padding=True
-            ).to(device)
+
+            # Retrieve pre-cached L2-normalized class text prototypes
+            text_prototypes, ordered_classes = get_cached_text_features(clip_model, clip_processor, device)
+
+            # Preprocess and encode image using CLIP image encoder
+            image_inputs = clip_processor(images=image, return_tensors="pt").to(device)
 
             with torch.no_grad():
-                outputs = clip_model(**inputs)
-                # Compute image-to-text cosine similarities scaled by CLIP's learned logit_scale
-                logits_per_image = outputs.logits_per_image[0] # Shape: (len(all_prompts),)
+                image_features = clip_model.get_image_features(**image_inputs)
+                # L2 normalize image feature vector
+                image_features = image_features / image_features.norm(dim=-1, keepdim=True)
 
-            # Aggregate logits per disaster class by averaging across that class's prompt templates
-            class_logits = {}
-            for class_name in DISASTER_PROMPT_TEMPLATES.keys():
-                class_logits[class_name] = []
+                # Compute cosine similarities to each class prototype: (1, 512) @ (512, num_classes)
+                cosine_sims = (image_features @ text_prototypes.T)[0] # Shape: (num_classes,)
 
-            for logit_val, class_name in zip(logits_per_image, prompt_to_class):
-                class_logits[class_name].append(logit_val.unsqueeze(0))
+                # Scale cosine similarities by CLIP's learned logit_scale temperature
+                logit_scale = clip_model.logit_scale.exp()
+                logits = cosine_sims * logit_scale
 
-            mean_logits = []
-            ordered_classes = list(DISASTER_PROMPT_TEMPLATES.keys())
-            for class_name in ordered_classes:
-                stacked = torch.cat(class_logits[class_name])
-                mean_logits.append(stacked.mean().unsqueeze(0))
-
-            # Apply softmax over the aggregated class logits to get well-normalized probabilities
-            aggregated_tensor = torch.cat(mean_logits)
-            probs = torch.softmax(aggregated_tensor, dim=0).cpu().numpy()
+                # Softmax over aggregated class logits to get calibrated probabilities
+                probs = torch.softmax(logits, dim=0).cpu().numpy()
+                raw_sims = cosine_sims.cpu().numpy()
 
             for class_name, prob in zip(ordered_classes, probs):
                 scores.append({
@@ -226,6 +269,16 @@ def classify_disaster_image(image_path: str) -> Dict[str, Any]:
             top_disaster = scores[0]["label"]
             top_confidence = scores[0]["score"]
             execution_mode = "inference"
+
+            # Development debug diagnostics logging
+            filename = os.path.basename(image_path)
+            print(f"[VisionService][CLIP Zero-Shot Inference: {filename}]")
+            for item in scores:
+                class_idx = ordered_classes.index(item["label"])
+                sim_val = raw_sims[class_idx]
+                pct = item["score"] * 100
+                print(f"   - {item['label']:<24}: sim={sim_val:+.4f} | prob={pct:5.1f}%")
+            print(f"   => Winner: {top_disaster} (conf={top_confidence*100:.1f}%)")
 
         except Exception as e:
             print(f"[VisionService] CLIP model inference exception: {e}. Utilizing fallback scoring.")
@@ -246,7 +299,8 @@ def classify_disaster_image(image_path: str) -> Dict[str, Any]:
     else:
         severity = "LOW"
 
-    # 2. YOLO11 Object Detection (Visible physical entity detection)
+    # 2. YOLO11 Object Detection (Visible physical entity detection only)
+    # Strictly supplementary; does NOT determine or overwrite disaster class.
     yolo_data = detect_objects_yolo(image_path)
 
     return {
@@ -262,39 +316,80 @@ def classify_disaster_image(image_path: str) -> Dict[str, Any]:
 
 def _fallback_classify(pil_img: Image.Image):
     """
-    Deterministic visual color histogram fallback if running in FAST_DEV_MODE or before weights load.
-    Analyzes visual channel signatures (e.g. water reflection, vegetation, smoke/fire hues).
+    Lightweight continuous multi-spectral and edge feature extraction for FAST_DEV_MODE or fallback.
+    Extracts visual features (color balance, earth/brown tones, gray rubble/edge density) across
+    all 6 candidate classes without hardcoded shortcuts or YOLO dependencies.
     """
     arr = np.array(pil_img)
-    avg_r = float(np.mean(arr[:, :, 0]))
-    avg_g = float(np.mean(arr[:, :, 1]))
-    avg_b = float(np.mean(arr[:, :, 2]))
+    h, w = arr.shape[:2]
 
-    # Visual heuristic:
-    # 1. Flood water / muddy inundation: Blue/Gray or muddy brown water
-    # 2. Wildfire: Strong red/orange channel prominence (R > 135 and R > G*1.15)
-    # 3. Normal scene: Lush green landscape (G > R and G > B)
-    if (avg_b > avg_r and avg_b > avg_g) or (abs(avg_r - avg_b) < 15 and avg_g < avg_r and avg_r < 130):
-        top = "flood"
-        conf = 0.82
-    elif avg_r > avg_b * 1.2 and avg_r > 135:
-        top = "wildfire"
-        conf = 0.84
-    elif avg_g > avg_r and avg_g > avg_b:
-        top = "normal scene"
-        conf = 0.85
-    else:
-        top = "earthquake damage"
-        conf = 0.68
+    # Downsample if large for fast computation
+    if max(h, w) > 256:
+        scale = 256.0 / max(h, w)
+        arr = cv2.resize(arr, (int(w * scale), int(h * scale)))
 
-    scores = [{"label": top, "score": conf}]
-    remaining = [lbl for lbl in CANDIDATE_LABELS if lbl != top]
-    rem_score = round((1.0 - conf) / len(remaining), 4)
-    for lbl in remaining:
-        scores.append({"label": lbl, "score": rem_score})
+    r = arr[:, :, 0].astype(float)
+    g = arr[:, :, 1].astype(float)
+    b = arr[:, :, 2].astype(float)
+
+    mean_r, mean_g, mean_b = float(np.mean(r)), float(np.mean(g)), float(np.mean(b))
+
+    # Edge density via Sobel (structural fragmentation / concrete rubble indicator)
+    gray = cv2.cvtColor(arr, cv2.COLOR_RGB2GRAY)
+    sobel_x = cv2.Sobel(gray, cv2.CV_64F, 1, 0, ksize=3)
+    sobel_y = cv2.Sobel(gray, cv2.CV_64F, 0, 1, ksize=3)
+    edge_density = float(np.mean(np.sqrt(sobel_x**2 + sobel_y**2)))
+
+    # Color saturation in HSV
+    hsv = cv2.cvtColor(arr, cv2.COLOR_RGB2HSV)
+    sat = float(np.mean(hsv[:, :, 1]))
+
+    # Dynamic class affinity scores based on physical visual properties
+    # 1. Flood: Water presence (high blue/cyan, or dark muddy water where G & B are close and R is lower)
+    flood_affinity = max(0.0, (mean_b - mean_r) * 1.5) + max(0.0, (140 - abs(mean_r - 95))) * 0.4
+
+    # 2. Wildfire: High red/orange excess, high saturation, high red contrast
+    fire_affinity = max(0.0, (mean_r - mean_b) * 1.8) + (sat * 0.6 if mean_r > 110 else 0.0)
+
+    # 3. Earthquake damage: High edge fragmentation (rubble), neutral gray palette (low color saturation)
+    eq_affinity = (edge_density * 1.6) + max(0.0, (70 - sat) * 1.2)
+
+    # 4. Landslide: High earth/brown presence (R > B, moderate saturation, slope texture)
+    brown_affinity = max(0.0, (mean_r - mean_b)) * 1.1 + max(0.0, (mean_g - mean_b)) * 0.6 + (edge_density * 0.5)
+
+    # 5. Cyclone / hurricane: Broken roofs / mixed wind debris with overcast / desaturated sky
+    cyclone_affinity = (edge_density * 1.1) + max(0.0, (mean_b - 100) * 0.5) + max(0.0, (80 - sat) * 0.8)
+
+    # 6. Normal scene: High green vegetation balance or clean dry urban balanced spectrum with moderate edges
+    normal_affinity = max(0.0, (mean_g - mean_r) * 2.2) + max(0.0, (mean_g - mean_b) * 1.8) + max(0.0, (40 - edge_density) * 1.2)
+
+    affinities = np.array([
+        flood_affinity,
+        fire_affinity,
+        eq_affinity,
+        cyclone_affinity,
+        brown_affinity,
+        normal_affinity
+    ], dtype=float)
+
+    # Softmax temperature scaling
+    temp = 18.0
+    exp_aff = np.exp((affinities - np.max(affinities)) / (temp / 10.0))
+    probs = exp_aff / np.sum(exp_aff)
+
+    scores = []
+    for lbl, p in zip(CANDIDATE_LABELS, probs):
+        scores.append({"label": lbl, "score": round(float(p), 4)})
 
     scores.sort(key=lambda x: x["score"], reverse=True)
-    return top, conf, scores
+    top_disaster = scores[0]["label"]
+    top_confidence = scores[0]["score"]
+
+    print("[VisionService][Dev Fallback Visual Diagnostics]")
+    for item in scores:
+        print(f"   - {item['label']:<24}: prob={item['score']*100:5.1f}%")
+
+    return top_disaster, top_confidence, scores
 
 def compare_images_and_generate_heatmap(before_path: str, after_path: str) -> Dict[str, Any]:
     """
