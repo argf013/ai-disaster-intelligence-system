@@ -3,6 +3,8 @@ import uuid
 import numpy as np
 import cv2
 from PIL import Image, ImageOps, ImageDraw
+from typing import Dict, Any, List, Optional
+from app.config import HEATMAP_UPLOAD_DIR, RAW_UPLOAD_DIR, ANNOTATED_UPLOAD_DIR, FAST_DEV_MODE
 
 # Comprehensive, visually distinctive multi-prompt templates per disaster category.
 # Following OpenAI CLIP best practices (Radford et al., 2021):
