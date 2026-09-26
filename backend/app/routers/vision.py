@@ -41,23 +41,28 @@ async def classify_image(
         lon = longitude if longitude is not None else 78.4867
         shelter_res = find_nearest_shelter(lat, lon, db)
         
+        yolo_list = result.get("yolo_objects", [])
         yolo_str = (
-            ", ".join([f"{o.name} ({round(o.confidence * 100)}%)" for o in result.yolo_objects])
-            if result.yolo_objects
+            ", ".join([f"{o.get('name', 'entity')} ({round(o.get('confidence', 0) * 100)}%)" for o in yolo_list])
+            if yolo_list
             else None
         )
         
+        severity_val = result.get("severity", "LOW")
+        top_conf = result.get("top_confidence", 0.0)
+        top_disaster = result.get("top_disaster", "normal scene")
+
         background_tasks.add_task(
             send_emergency_disaster_email,
-            severity=result.severity if result.severity in ["HIGH", "CRITICAL"] else "HIGH",
+            severity=severity_val if severity_val in ["HIGH", "CRITICAL"] else "HIGH",
             location_name=location_name or "Active Incident Sector",
-            risk_score=round(result.top_confidence * 100, 1),
+            risk_score=round(top_conf * 100, 1),
             shelter_name=shelter_res.shelter.name if shelter_res else "Primary Municipal Shelter",
             shelter_address=shelter_res.shelter.address if shelter_res else None,
             shelter_distance_km=shelter_res.distance_km if shelter_res else None,
             shelter_phone=shelter_res.shelter.contact_phone if shelter_res else None,
-            detected_disaster=result.top_disaster,
-            image_confidence=result.top_confidence,
+            detected_disaster=top_disaster,
+            image_confidence=top_conf,
             yolo_objects=yolo_str
         )
         

@@ -123,6 +123,8 @@ def get_cached_text_features(clip_model, clip_processor, device):
             ).to(device)
             # Encode templates through CLIP text model
             text_embeds = clip_model.get_text_features(**text_inputs)
+            if hasattr(text_embeds, "pooler_output") and text_embeds.pooler_output is not None:
+                text_embeds = text_embeds.pooler_output
             # L2-normalize each prompt embedding
             text_embeds = text_embeds / text_embeds.norm(dim=-1, keepdim=True)
             # Average normalized vectors to form the ensemble prototype
@@ -246,6 +248,8 @@ def classify_disaster_image(image_path: str) -> Dict[str, Any]:
 
             with torch.no_grad():
                 image_features = clip_model.get_image_features(**image_inputs)
+                if hasattr(image_features, "pooler_output") and image_features.pooler_output is not None:
+                    image_features = image_features.pooler_output
                 # L2 normalize image feature vector
                 image_features = image_features / image_features.norm(dim=-1, keepdim=True)
 
